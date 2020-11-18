@@ -27,6 +27,10 @@ async def on_ready():
 async def on_message(message): 
     if message.author == client.user:
         return
+    if message.content.startswith("$gigtest"):
+        s='this is a test response'
+        await splitsend(message.channel,s,False)
+        return
     if message.content.startswith("$giglist"):
         s=giglist()
         await splitsend(message.channel,s,False)
@@ -42,7 +46,7 @@ $gigdrop gigid indicates this gig was taken
         return
     if message.content.startswith("$gigadd"):
         conts=message.content[8:]
-        db_c.execute('''insert into gigs values (?)''',(str(message.author.id),conts,0,int(time.time()),0))
+        db_c.execute('''insert into gigs values (?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0))
         conn.commit()
         s='new gig id: ' +db_c.lastrowid
         await splitsend(message.channel,s,False)
