@@ -1,11 +1,11 @@
-#simple gig manager using sqlite
-#database has one table: gigs with fields:
-#gigid INTEGER PRIMARY KEY - number of gig entry in table
-#creatorid text - discord id of creator
-#contents text - the contenst of teh gig - no internal formatting. consider showagig
-#filled int - 0 - unfilled 1= yes filled
-#createdat int - timestamp of when gig created
-#filledat int - timestamp of filling
+#simple gig manager using sqlite3
+#database has one table: gigs and that table has the following  fields:
+#   gigid INTEGER PRIMARY KEY - number of gig entry in table
+#   creatorid text - discord id of creator
+#   contents text - the contenst of teh gig - no internal formatting. consider showagig
+#   filled int - 0= unfilled 1= yes filled
+#   createdat int - timestamp of when gig created
+#   filledat int - timestamp of filling
 
 from discord.ext import tasks, commands
 import discord
@@ -51,7 +51,7 @@ $giglist         lists available gigs
 $gigadd TEXT     adds text as a new gig and returns a gigid
 $gigdrop GIGID   marks gigid as taken
         '''
-        await splitsend(message.channel,s,False)
+        await splitsend(message.channel,s,True)
         return
     if message.content.startswith("$gigadd"):
         conts=message.content[8:]
