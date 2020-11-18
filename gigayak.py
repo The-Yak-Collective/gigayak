@@ -73,7 +73,8 @@ def giglist():
     q=''
     rows=db_c.execute('select * from gigs where filled=0').fetchall()
     for row in rows:
-        q=q+'id='+str(row[0])+':\n'+str(row[2])+'\n'
+        thestring='(ID {}) From @{}:\n{}'.format(row[0],client.get_user(int(row[1])).name,row[2])
+        q=q+thestring+'\n'
     return q
 
 def checkon_database(): 
