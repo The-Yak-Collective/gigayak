@@ -1,0 +1,8 @@
+#actions to do after pull to complete deploy. 
+exec >~/robot/gigayak/logfileofpostmerge
+exec 2>&1
+set -x
+kill -9 $(ps ax | grep 'gigayak' | awk '{print $1;exit}')
+nohup python3 ~/robot/gigayak/gigayak.py 2>&1 &
+exit
+
