@@ -41,7 +41,7 @@ async def on_message(message):
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("$giglist"):
-        s='list of outstanding gigs:\n'+giglist()
+        s='list of outstanding gigs:\n\n'+giglist()
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("$gighelp"):
@@ -73,7 +73,7 @@ def giglist():
     q=''
     rows=db_c.execute('select * from gigs where filled=0').fetchall()
     for row in rows:
-        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but thsi way discord parses
+        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
         q=q+thestring+'\n\n'
     return q
 
