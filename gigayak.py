@@ -46,7 +46,7 @@ $gigdrop gigid indicates this gig was taken
         return
     if message.content.startswith("$gigadd"):
         conts=message.content[8:]
-        db_c.execute('''insert into gigs values (0,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0))
+        db_c.execute('''insert into gigs values (NULL,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0))
         conn.commit()
         s='new gig id: ' +int(db_c.lastrowid)
         await splitsend(message.channel,s,False)
@@ -63,7 +63,7 @@ def giglist():
     q=''
     rows=db_c.execute('select * from gigs where filled=0').fetchall()
     for row in rows:
-        q=q+str(row[0])+'  '+str(row[2])+'\n'
+        q=q+'id='+str(row[0])+':\n'+str(row[2])+'\n'
     return q
 
 def checkon_database(): 
