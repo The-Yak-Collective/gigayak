@@ -63,7 +63,7 @@ $gigdrop gigid indicates this gig was taken
         
     if message.content.startswith("$gigdrop"):
         conts=int(message.content[9:])
-        db_c.execute('''UPDATE gigs set filled=1, filledat= ? where gigid=?) ''',(int(time.time()),conts))
+        db_c.execute('''UPDATE gigs set filled=1, filledat= ? where gigid=? ''',(int(time.time()),conts))
         conn.commit()
         s='marked as filled: ' +db_c.lastrowid
         await splitsend(message.channel,s,False)
