@@ -1,3 +1,12 @@
+#simple gig manager using sqlite
+#database has one table: gigs with fields:
+#gigid INTEGER PRIMARY KEY - number of gig entry in table
+#creatorid text - discord id of creator
+#contents text - the contenst of teh gig - no internal formatting. consider showagig
+#filled int - 0 - unfilled 1= yes filled
+#createdat int - timestamp of when gig created
+#filledat int - timestamp of filling
+
 from discord.ext import tasks, commands
 import discord
 import asyncio
@@ -48,9 +57,10 @@ $gigdrop gigid indicates this gig was taken
         conts=message.content[8:]
         db_c.execute('''insert into gigs values (NULL,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0))
         conn.commit()
-        s='new gig id: ' +int(db_c.lastrowid)
+        s='new gig id: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
         return
+        
     if message.content.startswith("$gigdrop"):
         conts=int(message.content[9:])
         db_c.execute('''UPDATE gigs set filled=1, filledat= ? where gigid=?) ''',(int(time.time()),conts))
