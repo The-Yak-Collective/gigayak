@@ -18,7 +18,7 @@ import sqlite3  #consider , "check_same_thread = False" on sqlite.connect()
 
 from discord_gigayak import *
 
-conn=sqlite3.connect('/home/yak/gigayak/gigdatabase.db') #the connection should be global. 
+conn=sqlite3.connect('/home/yak/robot/gigayak/gigdatabase.db') #the connection should be global. 
 db_c = conn.cursor()
 
 
