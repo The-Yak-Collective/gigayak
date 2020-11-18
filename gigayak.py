@@ -46,10 +46,10 @@ async def on_message(message):
         return
     if message.content.startswith("$gighelp"):
         s='''
-$gighelp this message\n
-$giglist lists available gigs\n
-$gigadd TEXT adds text as a new gig and returns a gigid\n
-$gigdrop gigid indicates this gig was taken
+$gighelp         this message
+$giglist         lists available gigs
+$gigadd TEXT     adds text as a new gig and returns a gigid
+$gigdrop GIGID   marks gigid as taken
         '''
         await splitsend(message.channel,s,False)
         return
