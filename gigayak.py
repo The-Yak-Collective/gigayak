@@ -36,8 +36,9 @@ async def on_ready():
 async def on_message(message): 
     if message.author == client.user:
         return
+#gigabot
     if message.content.startswith("$gigtest"):
-        s='this is a test response'
+        s='this is a test response from gigbot'
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("$giglist"):
@@ -68,10 +69,50 @@ $gigdrop GIGID   marks gigid as taken
         s='marked as filled: ' +db_c.lastrowid
         await splitsend(message.channel,s,False)
         return
+#agendabot
+    if message.content.startswith("$agendatest"):
+        s='this is a test response from agendabot'
+        await splitsend(message.channel,s,False)
+        return
+    if message.content.startswith("$agendalist"):
+        s='list of agenda items in this channel:\n\n'+agendalist(message.channel.id)
+        await splitsend(message.channel,s,False)
+        return
+    if message.content.startswith("$agendahelp"):
+        s='''
+$agendahelp         this message
+$agendalist         list of open agenda items
+$agendaadd TEXT     adds text as a new item for agenda for THIS channel
+$agendadrop AGID    marks agid as taken off agenda
+        '''
+        await splitsend(message.channel,s,True)
+        return
+    if message.content.startswith("$agendaadd"):
+        conts=message.content[8:]
+        db_c.execute('''insert into agenda values (NULL,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
+        conn.commit()
+        s='new agenda item id: ' +str(db_c.lastrowid)
+        await splitsend(message.channel,s,False)
+        return
         
+    if message.content.startswith("$agendadrop"):
+        conts=int(message.content[9:])
+        db_c.execute('''UPDATE agenda set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
+        conn.commit()
+        s='removed from agenda: ' +db_c.lastrowid
+        await splitsend(message.channel,s,False)
+        return
 def giglist():
     q=''
     rows=db_c.execute('select * from gigs where filled=0').fetchall()
+    for row in rows:
+        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
+        q=q+thestring+'\n\n'
+    return q
+
+def agendalist(x):
+    q=''
+    rows=db_c.execute('select * from gigs where filled=0 AND chan=?',(x,)).fetchall()
     for row in rows:
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
         q=q+thestring+'\n\n'
@@ -82,6 +123,10 @@ def checkon_database():
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='gigs' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        conn.commit()
+    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='agenda' ''')
+    if db_c.fetchone()[0]!=1:
+        db_c.execute('''CREATE TABLE agenda (agid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
         conn.commit()
 
 
