@@ -92,7 +92,7 @@ $agendadrop AGID    marks agid as taken off agenda
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("$agendaadd"):
-        conts=message.content.[11:]
+        conts=message.content[11:]
         db_c.execute('''insert into agenda values (NULL,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
         conn.commit()
         s='new agenda item id: ' +str(db_c.lastrowid)
