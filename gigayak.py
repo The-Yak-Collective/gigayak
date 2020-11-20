@@ -45,7 +45,7 @@ def allowed(x,y): #is x allowed to play with item created by y
 async def on_message(message): 
     if message.author == client.user:
         return
-    dmtarget=await dmchan(message.author.id).dm_channel
+    dmtarget=await dmchan(message.author.id)
 #gigabot
     if message.content.startswith("$gigtest"):
         s='this is a test response from gigbot'
