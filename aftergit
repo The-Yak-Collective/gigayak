@@ -7,5 +7,3 @@ kill -9 $(ps ax | grep 'gigayak' | awk '{printf $1 " "}')
 
 nohup python3 ~/robot/gigayak/gigayak.py 2>&1 &
 
-exit
-
