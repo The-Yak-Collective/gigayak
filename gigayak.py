@@ -175,11 +175,13 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
 
     if message.content.startswith("$proj+"):
         cmd=message.content.split(maxsplit=3)
-        if len(cmd)<3:
+        if len(cmd)<2:
             return
+        if len(cmd)==2:
+            cmd.append("no reason given")
         val=int(db_c.execute('''select upvotes from projects where pjid=?''',(cmd[1],)).fetchone()[0])
         pjset(cmd[1],"upvotes",val+1)
-        s='upvoted project: ' +str(db_c.lastrowid)
+        s='upvoted project: ' +cmd[1]
         await splitsend(message.channel,s,False)
         db_c.execute('''insert into votes values (NULL,?,?,?,?,?)''',(str(message.author.id),cmd[1],+1,cmd[2],int(time.time())))
         conn.commit()
@@ -187,11 +189,13 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         
     if message.content.startswith("$proj-"):
         cmd=message.content.split(maxsplit=3)
-        if len(cmd)<3:
+        if len(cmd)<2:
             return
+        if len(cmd)==2:
+            cmd.append("no reason given")
         val=int(db_c.execute('''select downvotes from projects where pjid=?''',(cmd[1],)).fetchone()[0])
-        pjset(cmd[1],"upvotes",val-1)
-        s='upvoted project: ' +str(db_c.lastrowid)
+        pjset(cmd[1],"downvotes",val-1)
+        s='downvoted project: ' +cmd[1]
         await splitsend(message.channel,s,False)
         db_c.execute('''insert into votes values (NULL,?,?,?,?,?)''',(str(message.author.id),cmd[1],-1,cmd[2],int(time.time())))
         conn.commit()
