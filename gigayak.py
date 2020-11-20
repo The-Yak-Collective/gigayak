@@ -165,7 +165,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
-        if not allowed(message.author.id,int(db_c.execute('''select creatorid from projects where pjid=?''',(cmd[1],)).fetchone())):
+        if not allowed(message.author.id,int(db_c.execute('''select creatorid from projects where pjid=?''',(cmd[1],)).fetchone()[0])):
             splitsend(dmtarget,'no permission to do this',False)
             return
         pjset(cmd[1],"contents",cmd[2])
@@ -177,7 +177,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
-        val=int(db_c.execute('''select upvotes from projects where pjid=?''',(cmd[1],)).fetchone())
+        val=int(db_c.execute('''select upvotes from projects where pjid=?''',(cmd[1],)).fetchone()[0])
         pjset(cmd[1],"upvotes",val+1)
         s='upvoted project: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
@@ -188,7 +188,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
-        val=int(db_c.execute('''select downvotes from projects where pjid=?''',(cmd[1],)).fetchone())
+        val=int(db_c.execute('''select downvotes from projects where pjid=?''',(cmd[1],)).fetchone()[0])
         pjset(cmd[1],"upvotes",val-1)
         s='upvoted project: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
