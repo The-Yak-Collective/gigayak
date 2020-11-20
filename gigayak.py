@@ -78,6 +78,10 @@ $gigdrop GIGID   marks gigid as taken
         s='list of agenda items in this channel:\n\n'+agendalist(message.channel.id)
         await splitsend(message.channel,s,False)
         return
+    if message.content.startswith("$agendaall"):
+        s='list of agenda items in this channel:\n\n'+agendalistall()
+        await splitsend(message.channel,s,False)
+        return
     if message.content.startswith("$agendahelp"):
         s='''
 $agendahelp         this message
@@ -112,11 +116,19 @@ def giglist():
 
 def agendalist(x):
     q=''
-    rows=db_c.execute('select * from gigs where filled=0 AND chan=?',(x,)).fetchall()
+    rows=db_c.execute('select * from agenda where filled=0 AND chan=?',(x,)).fetchall()
     for row in rows:
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
         q=q+thestring+'\n\n'
     return q
+def agendalistall():
+    q=''
+    rows=db_c.execute('select * from agenda where filled=0 ').fetchall()
+    for row in rows:
+        thestring='(id **{}**) chan:#{} From <@{}>:\n{}'.format(row[0],row[6], row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
+        q=q+thestring+'\n\n'
+    return q
+
 
 def checkon_database(): 
 
