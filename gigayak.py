@@ -182,6 +182,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         s='upvoted project: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
         db_c.execute('''insert into votes values (NULL,?,?,?,?,?)''',(str(message.author.id),cmd[1],+1,cmd[2],int(time.time())))
+        conn.commit()
         return
         
     if message.content.startswith("$proj-"):
@@ -193,6 +194,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         s='upvoted project: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
         db_c.execute('''insert into votes values (NULL,?,?,?,?,?)''',(str(message.author.id),cmd[1],-1,cmd[2],int(time.time())))
+        conn.commit()
         return
         
     if message.content.startswith("$projvotes"):
