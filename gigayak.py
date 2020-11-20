@@ -198,7 +198,9 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
         
     if message.content.startswith("$projvotes"):
-        cmd=message.content.split(maxsplit=3)
+        cmd=message.content.split(maxsplit=2)
+        if len(cmd)<2:
+            return
         s='votes for project {}'.format(cmd[1]) +votelist(cmd[1])
         await splitsend(message.channel,s,False)
         return
