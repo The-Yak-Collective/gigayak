@@ -245,7 +245,7 @@ def projlist():
     q=''
     rows=db_c.execute('select * from projects where filled=0').fetchall()
     for row in rows:
-        thestring='(project **{}**) From <@{}> up:{} down:{} status:{}\n{}'.format(row[0],row[1],row[7],row[8],row[9],row[2])
+        thestring='(project **{}**) From <@{}> up:{} down:{} status:{}\n{}'.format(row[0],row[1],row[6],row[7],row[8],row[2])
         q=q+thestring+'\n\n'
     return q
 
