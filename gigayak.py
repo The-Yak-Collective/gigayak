@@ -76,7 +76,7 @@ $gigdrop GIGID   marks gigid as taken
         conts=int(message.content[9:])
         db_c.execute('''UPDATE gigs set filled=1, filledat= ? where gigid=? ''',(int(time.time()),conts))
         conn.commit()
-        s='marked as filled: ' +db_c.lastrowid
+        s='marked as filled: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
         return
 #agendabot
@@ -142,7 +142,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("$projadd"):
-        conts=message.content.split(maxsplit=2)[1]
+        conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into projects values (NULL,?,?,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,0,0,""))
         conn.commit()
         s='new project id: ' +str(db_c.lastrowid)
@@ -150,7 +150,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
 
     if message.content.startswith("$projset"):
-        cmd=message.content.split(maxsplit=4)
+        cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
         if not allowed(message.author.id,0):
@@ -162,7 +162,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
 
     if message.content.startswith("$projnewtext"):
-        cmd=message.content.split(maxsplit=3)
+        cmd=message.content.split(maxsplit=2)
         if len(cmd)<3:
             return
         if not allowed(message.author.id,int(db_c.execute('''select creatorid from projects where pjid=?''',(cmd[1],)).fetchone()[0])):
@@ -174,7 +174,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
 
     if message.content.startswith("$proj+"):
-        cmd=message.content.split(maxsplit=3)
+        cmd=message.content.split(maxsplit=2)
         if len(cmd)<2:
             return
         if len(cmd)==2:
@@ -188,7 +188,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
         
     if message.content.startswith("$proj-"):
-        cmd=message.content.split(maxsplit=3)
+        cmd=message.content.split(maxsplit=2)
         if len(cmd)<2:
             return
         if len(cmd)==2:
@@ -202,7 +202,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
         
     if message.content.startswith("$projvotes"):
-        cmd=message.content.split(maxsplit=2)
+        cmd=message.content.split(maxsplit=1)
         if len(cmd)<2:
             return
         s='votes for project {}'.format(cmd[1]) +votelist(cmd[1])
