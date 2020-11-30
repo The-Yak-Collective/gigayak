@@ -301,7 +301,7 @@ async def splitsend(ch,st,codeformat):
         else:
             await ch.send(st)
     else:
-        x=st.rfind('\n',0,2000)
+        x=st.rfind('\n',0,1900)
         if codeformat:
             await ch.send('```'+st[0:x]+'```')
         else:
