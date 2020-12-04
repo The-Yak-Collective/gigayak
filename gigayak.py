@@ -47,8 +47,8 @@ async def on_message(message):
         return
     dmtarget=await dmchan(message.author.id)
 #gigabot
-    try_bot("gig",message)
-    try_bot("wanted",message)
+    await try_bot("gig",message)
+    await try_bot("wanted",message)
 
 #agendabot
     if message.content.startswith("$agendatest"):
