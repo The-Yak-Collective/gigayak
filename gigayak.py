@@ -199,10 +199,10 @@ async def try_bot(w,message):
         return
     if message.content.startswith("${}help".format(w)):
         s='''
-${0}help         this message
-${0}list         lists available {0}s
-${0}add TEXT     adds text as a new {0} and returns a {0}id
-${0}drop {0}ID   marks {0}id as taken
+${0}help          this message
+${0}list          lists available {0}s
+${0}add TEXT      adds text as a new {0} and returns a {0}id
+${0}drop {0}ID    marks {0}id as taken
         '''.format(w)
         await splitsend(message.channel,s,True)
         return
@@ -215,7 +215,7 @@ ${0}drop {0}ID   marks {0}id as taken
         return
         
     if message.content.startswith("${}drop".format(w)):
-        conts=int(message.content(maxsplit=1)[1])
+        conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
         s='marked as filled: ' +str(db_c.lastrowid)
