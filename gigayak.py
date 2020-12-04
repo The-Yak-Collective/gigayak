@@ -49,7 +49,7 @@ async def on_message(message):
 #gigabot
     await try_bot("gig",message)
     await try_bot("wanted",message)
-
+    await try_bot("newsitem",message)
 #agendabot
     if message.content.startswith("$agendatest"):
         s='this is a test response from agendabot'
@@ -73,7 +73,7 @@ $agendadrop AGID    marks agid as taken off agenda
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("$agendaadd"):
-        conts=message.content[11:]
+        conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into agenda values (NULL,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
         conn.commit()
         s='new agenda item id: ' +str(db_c.lastrowid)
@@ -81,10 +81,10 @@ $agendadrop AGID    marks agid as taken off agenda
         return
         
     if message.content.startswith("$agendadrop"):
-        conts=int(message.content[12:])
+        conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE agenda set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
         conn.commit()
-        s='removed from agenda: ' +db_c.lastrowid
+        s='removed from agenda: ' +conts
         await splitsend(message.channel,s,False)
         return
 #projbot
@@ -181,10 +181,10 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
 
     if message.content.startswith("$projdrop"):
-        conts=int(message.content[10:])
+        conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE projects set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
         conn.commit()
-        s='removed from project list: ' +db_c.lastrowid
+        s='removed from project list: ' +conts
         await splitsend(message.channel,s,False)
         return
 
@@ -202,7 +202,7 @@ async def try_bot(w,message):
 ${0}help          this message
 ${0}list          lists available {0}s
 ${0}add TEXT      adds text as a new {0} and returns a {0}id
-${0}drop {0}ID    marks {0}id as taken
+${0}drop {0}ID    marks {0}id as closed
         '''.format(w)
         await splitsend(message.channel,s,True)
         return
@@ -218,7 +218,7 @@ ${0}drop {0}ID    marks {0}id as taken
         conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
-        s='marked as filled: ' +str(db_c.lastrowid)
+        s='marked as filled: ' +str(conts)
         await splitsend(message.channel,s,False)
         return
 
@@ -276,9 +276,15 @@ def checkon_database():
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
+
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='wanteds' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        conn.commit()
+
+    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='newsitem' ''')
+    if db_c.fetchone()[0]!=1:
+        db_c.execute('''CREATE TABLE newsitems (newsitemid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='agenda' ''')
