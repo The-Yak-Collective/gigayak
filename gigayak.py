@@ -188,7 +188,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-def try_bot(w,message):
+async def try_bot(w,message):
     if message.content.startswith("${}test".format(w)):
         s='this is a test response from {}bot'.format(w)
         await splitsend(message.channel,s,False)
