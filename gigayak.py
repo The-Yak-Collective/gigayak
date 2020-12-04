@@ -207,7 +207,7 @@ ${0}drop {0}ID   marks {0}id as taken
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("${}add".format(w)):
-        conts=message.content[8:]
+        conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into {}s values (NULL,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0))
         conn.commit()
         s='new {} id: '.format(w) +str(db_c.lastrowid)
@@ -215,7 +215,7 @@ ${0}drop {0}ID   marks {0}id as taken
         return
         
     if message.content.startswith("${}drop".format(w)):
-        conts=int(message.content[9:])
+        conts=int(message.content(maxsplit=1)[1])
         db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
         s='marked as filled: ' +str(db_c.lastrowid)
