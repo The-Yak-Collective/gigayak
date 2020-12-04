@@ -47,41 +47,9 @@ async def on_message(message):
         return
     dmtarget=await dmchan(message.author.id)
 #gigabot
-    try_bot("gig")
-    try_bot("wanted")
-    def try_bot(w):
-        if message.content.startswith("${}test".format(w)):
-            s='this is a test response from {}bot'.format(w)
-            await splitsend(message.channel,s,False)
-            return
-        if message.content.startswith("${}list".format(w)):
-            s='list of outstanding {}s:\n\n'.format(w)+thelist(w)
-            await splitsend(message.channel,s,False)
-            return
-        if message.content.startswith("${}help".format(w)):
-            s='''
-${0}help         this message
-${0}list         lists available {0}s
-${0}add TEXT     adds text as a new {0} and returns a {0}id
-${0}drop {0}ID   marks {0}id as taken
-            '''.format(w)
-            await splitsend(message.channel,s,True)
-            return
-        if message.content.startswith("${}add".format(w)):
-            conts=message.content[8:]
-            db_c.execute('''insert into {}s values (NULL,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0))
-            conn.commit()
-            s='new {} id: '.format(w) +str(db_c.lastrowid)
-            await splitsend(message.channel,s,False)
-            return
-            
-        if message.content.startswith("${}drop".format(w)):
-            conts=int(message.content[9:])
-            db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
-            conn.commit()
-            s='marked as filled: ' +str(db_c.lastrowid)
-            await splitsend(message.channel,s,False)
-            return
+    try_bot("gig",message)
+    try_bot("wanted",message)
+
 #agendabot
     if message.content.startswith("$agendatest"):
         s='this is a test response from agendabot'
@@ -217,6 +185,40 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         db_c.execute('''UPDATE projects set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
         conn.commit()
         s='removed from project list: ' +db_c.lastrowid
+        await splitsend(message.channel,s,False)
+        return
+
+def try_bot(w,message):
+    if message.content.startswith("${}test".format(w)):
+        s='this is a test response from {}bot'.format(w)
+        await splitsend(message.channel,s,False)
+        return
+    if message.content.startswith("${}list".format(w)):
+        s='list of outstanding {}s:\n\n'.format(w)+thelist(w)
+        await splitsend(message.channel,s,False)
+        return
+    if message.content.startswith("${}help".format(w)):
+        s='''
+${0}help         this message
+${0}list         lists available {0}s
+${0}add TEXT     adds text as a new {0} and returns a {0}id
+${0}drop {0}ID   marks {0}id as taken
+        '''.format(w)
+        await splitsend(message.channel,s,True)
+        return
+    if message.content.startswith("${}add".format(w)):
+        conts=message.content[8:]
+        db_c.execute('''insert into {}s values (NULL,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0))
+        conn.commit()
+        s='new {} id: '.format(w) +str(db_c.lastrowid)
+        await splitsend(message.channel,s,False)
+        return
+        
+    if message.content.startswith("${}drop".format(w)):
+        conts=int(message.content[9:])
+        db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
+        conn.commit()
+        s='marked as filled: ' +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
         return
 
