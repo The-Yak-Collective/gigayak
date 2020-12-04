@@ -47,38 +47,41 @@ async def on_message(message):
         return
     dmtarget=await dmchan(message.author.id)
 #gigabot
-    if message.content.startswith("$gigtest"):
-        s='this is a test response from gigbot'
-        await splitsend(message.channel,s,False)
-        return
-    if message.content.startswith("$giglist"):
-        s='list of outstanding gigs:\n\n'+giglist()
-        await splitsend(message.channel,s,False)
-        return
-    if message.content.startswith("$gighelp"):
-        s='''
-$gighelp         this message
-$giglist         lists available gigs
-$gigadd TEXT     adds text as a new gig and returns a gigid
-$gigdrop GIGID   marks gigid as taken
-        '''
-        await splitsend(message.channel,s,True)
-        return
-    if message.content.startswith("$gigadd"):
-        conts=message.content[8:]
-        db_c.execute('''insert into gigs values (NULL,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0))
-        conn.commit()
-        s='new gig id: ' +str(db_c.lastrowid)
-        await splitsend(message.channel,s,False)
-        return
-        
-    if message.content.startswith("$gigdrop"):
-        conts=int(message.content[9:])
-        db_c.execute('''UPDATE gigs set filled=1, filledat= ? where gigid=? ''',(int(time.time()),conts))
-        conn.commit()
-        s='marked as filled: ' +str(db_c.lastrowid)
-        await splitsend(message.channel,s,False)
-        return
+    try_bot("gig")
+    try_bot("wanted")
+    def try_bot(w):
+        if message.content.startswith("${}test".format(w)):
+            s='this is a test response from {}bot'.format(w)
+            await splitsend(message.channel,s,False)
+            return
+        if message.content.startswith("${}list".format(w)):
+            s='list of outstanding {}s:\n\n'.format(w)+thelist(w)
+            await splitsend(message.channel,s,False)
+            return
+        if message.content.startswith("${}help".format(w)):
+            s='''
+${0}help         this message
+${0}list         lists available {0}s
+${0}add TEXT     adds text as a new {0} and returns a {0}id
+${0}drop {0}ID   marks {0}id as taken
+            '''.format(w)
+            await splitsend(message.channel,s,True)
+            return
+        if message.content.startswith("${}add".format(w)):
+            conts=message.content[8:]
+            db_c.execute('''insert into {}s values (NULL,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0))
+            conn.commit()
+            s='new {} id: '.format(w) +str(db_c.lastrowid)
+            await splitsend(message.channel,s,False)
+            return
+            
+        if message.content.startswith("${}drop".format(w)):
+            conts=int(message.content[9:])
+            db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
+            conn.commit()
+            s='marked as filled: ' +str(db_c.lastrowid)
+            await splitsend(message.channel,s,False)
+            return
 #agendabot
     if message.content.startswith("$agendatest"):
         s='this is a test response from agendabot'
@@ -225,9 +228,9 @@ def pjset(pid, field, value):
 
 
 
-def giglist():
+def thelist(w):
     q=''
-    rows=db_c.execute('select * from gigs where filled=0').fetchall()
+    rows=db_c.execute('select * from {}s where filled=0'.format(w)).fetchall()
     for row in rows:
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
         q=q+thestring+'\n\n'
@@ -270,6 +273,10 @@ def checkon_database():
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='gigs' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        conn.commit()
+    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='wanteds' ''')
+    if db_c.fetchone()[0]!=1:
+        db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='agenda' ''')
