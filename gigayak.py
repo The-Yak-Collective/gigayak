@@ -7,6 +7,10 @@
 #   createdat int - timestamp of when gig created
 #   filledat int - timestamp of filling
 
+#using same scheme, also support project bot, help wanted bot, agenda bot and newletter bot
+
+#use GIGAYAK_DISCORD_KEY as an env variable - the key for discord bot. needs read/write permission to channels
+
 from discord.ext import tasks, commands
 import discord
 import asyncio
@@ -19,50 +23,62 @@ import sqlite3  #consider , "check_same_thread = False" on sqlite.connect()
 from discord_gigayak import *
 
 conn=sqlite3.connect('/home/yak/robot/gigayak/gigdatabase.db') #the connection should be global. 
+
 db_c = conn.cursor()
 
 
 load_dotenv('/home/yak/.env')
 
 
-@client.event
+@client.event #needed since it takes time to connect to discord
 async def on_ready(): 
     print('We have logged in as {0.user}'.format(client),  client.guilds)
     checkon_database()
     return
 
+
 def allowed(x,y): #is x allowed to play with item created by y
-    if x==y:
+#permissions - some activities can only be done by yakshaver, etc. or by person who initiated action
+    if x==y: #same person. setting one to zero will force role check
         return True
     mid=client.guilds[0].get_member(message.author.id)
     r=[x.name for x in mid.roles]
-    if 'yakshaver' in r or 'yakherder' in r:
+    if 'yakshaver' in r or 'yakherder' in r: #for now, both roles are same permissions
         return True
     return False
 
 
-@client.event
+@client.event 
 async def on_message(message): 
     if message.author == client.user:
-        return
-    dmtarget=await dmchan(message.author.id)
+        return #ignore own messages to avoid loops
+		
+    dmtarget=await dmchan(message.author.id) #build backchannel to user, so we do not answer in general channel
+
+#three bots that manage general lists
 #gigabot
     await try_bot("gig",message)
+#wantedbot
     await try_bot("wanted",message)
+#newsitem bot
     await try_bot("newsitem",message)
-#agendabot
+	
+#agendabot - agenda per channel
     if message.content.startswith("$agendatest"):
         s='this is a test response from agendabot'
         await splitsend(message.channel,s,False)
         return
+		
     if message.content.startswith("$agendalist"):
         s='list of agenda items in this channel:\n\n'+agendalist(message.channel.id)
         await splitsend(message.channel,s,False)
         return
-    if message.content.startswith("$agendaall"):
-        s='list of agenda items in this channel:\n\n'+agendalistall()
+		
+    if message.content.startswith("$agendaall"): #hidden feature. for testing
+        s='list of agenda items in all channels:\n\n'+agendalistall()
         await splitsend(message.channel,s,False)
         return
+		
     if message.content.startswith("$agendahelp"):
         s='''
 $agendahelp         this message
@@ -87,15 +103,18 @@ $agendadrop AGID    marks agid as taken off agenda
         s='removed from agenda: ' +conts
         await splitsend(message.channel,s,False)
         return
-#projbot
+		
+#projbot - vote on projects
     if message.content.startswith("$projtest"):
         s='this is a test response from projbot'
         await splitsend(message.channel,s,False)
         return
+		
     if message.content.startswith("$projlist"):
         s='list of open projects:\n\n'+projlist()
         await splitsend(message.channel,s,False)
         return
+		
     if message.content.startswith("$projhelp"):
         s='''
 $projhelp               this message
@@ -120,7 +139,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$projset"):
+    if message.content.startswith("$projset"): #hidden feature
         cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
@@ -132,7 +151,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$projnewtext"):
+    if message.content.startswith("$projnewtext"): #instead of exiting text
         cmd=message.content.split(maxsplit=2)
         if len(cmd)<3:
             return
@@ -188,6 +207,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
+#function which provides functionality for a list-based bot "w"
 async def try_bot(w,message):
     if message.content.startswith("${}test".format(w)):
         s='this is a test response from {}bot'.format(w)
@@ -222,14 +242,14 @@ ${0}drop {0}ID    marks {0}id as closed
         await splitsend(message.channel,s,False)
         return
 
-def pjset(pid, field, value):
+def pjset(pid, field, value): #set any value. note execute cannot have ? type parameters, only values
     db_c.execute('''UPDATE projects set {}=? where pjid=? '''.format(field),(value,pid))
     conn.commit()
 
     return
 
 
-
+#series of functions which generate formatted lists from the DB
 def thelist(w):
     q=''
     rows=db_c.execute('select * from {}s where filled=0'.format(w)).fetchall()
@@ -270,8 +290,9 @@ def votelist(x):
         q=q+thestring+'\n\n'
     return q
 
-def checkon_database(): 
 
+def checkon_database(): 
+#check if table exists in DB. if not, create it
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='gigs' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
@@ -303,6 +324,7 @@ def checkon_database():
         conn.commit()
 
 async def dmchan(t):
+#create DM channel betwen bot and user
     target=client.get_user(t).dm_channel
     if (not target): 
         print("need to create dm channel",flush=True)
@@ -310,6 +332,7 @@ async def dmchan(t):
     return target
 
 async def splitsend(ch,st,codeformat):
+#send messages within discord limit + optional code-type formatting
     if len(st)<1900: #discord limit is 2k and we want some play)
         if codeformat:
             await ch.send('```'+st+'```')
