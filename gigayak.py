@@ -100,7 +100,7 @@ $agendadrop AGID    marks agid as taken off agenda
         conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE agenda set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
         conn.commit()
-        s='removed from agenda: ' +conts
+        s='removed from agenda: ' +str(conts)
         await splitsend(message.channel,s,False)
         return
 		
@@ -203,7 +203,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE projects set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
         conn.commit()
-        s='removed from project list: ' +conts
+        s='removed from project list: ' +str(conts)
         await splitsend(message.channel,s,False)
         return
 
