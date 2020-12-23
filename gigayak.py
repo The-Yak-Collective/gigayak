@@ -327,7 +327,7 @@ def checkon_database():
         db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
 
-    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='newsitem' ''')
+    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='newsitems' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE newsitems (newsitemid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
