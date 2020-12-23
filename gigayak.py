@@ -64,45 +64,9 @@ async def on_message(message):
     await try_bot("newsitem",message)
 	
 #agendabot - agenda per channel
-    if message.content.startswith("$agendatest"):
-        s='this is a test response from agendabot'
-        await splitsend(message.channel,s,False)
-        return
-		
-    if message.content.startswith("$agendalist"):
-        s='list of agenda items in this channel:\n\n'+agendalist(message.channel.id)
-        await splitsend(message.channel,s,False)
-        return
-		
-    if message.content.startswith("$agendaall"): #hidden feature. for testing
-        s='list of agenda items in all channels:\n\n'+agendalistall()
-        await splitsend(message.channel,s,False)
-        return
-		
-    if message.content.startswith("$agendahelp"):
-        s='''
-$agendahelp         this message
-$agendalist         list of open agenda items
-$agendaadd TEXT     adds text as a new item for agenda for THIS channel
-$agendadrop AGID    marks agid as taken off agenda
-        '''
-        await splitsend(message.channel,s,True)
-        return
-    if message.content.startswith("$agendaadd"):
-        conts=message.content.split(maxsplit=1)[1]
-        db_c.execute('''insert into agenda values (NULL,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
-        conn.commit()
-        s='new agenda item id: ' +str(db_c.lastrowid)
-        await splitsend(message.channel,s,False)
-        return
-        
-    if message.content.startswith("$agendadrop"):
-        conts=int(message.content.split(maxsplit=1)[1])
-        db_c.execute('''UPDATE agenda set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
-        conn.commit()
-        s='removed from agenda: ' +str(conts)
-        await splitsend(message.channel,s,False)
-        return
+    await try_chan_bot('agenda',message)
+#agendabot - readinglist per channel
+    await try_chan_bot('reading',message)
 		
 #projbot - vote on projects
     if message.content.startswith("$projtest"):
@@ -201,11 +165,54 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
 
     if message.content.startswith("$projdrop"):
         conts=int(message.content.split(maxsplit=1)[1])
-        db_c.execute('''UPDATE projects set filled=1, filledat= ? where agid=? ''',(int(time.time()),conts))
+        db_c.execute('''UPDATE projects set filled=1, filledat= ? where pjid=? ''',(int(time.time()),conts))
         conn.commit()
         s='removed from project list: ' +str(conts)
         await splitsend(message.channel,s,False)
         return
+
+#function which provides functionality for a per-channel list-based bot "w"
+async def try_chan_bot(w,message):
+    if message.content.startswith("${}test".format(w)):
+        s='this is a test response from {}bot'.format(w)
+        await splitsend(message.channel,s,False)
+        return
+		
+    if message.content.startswith("${}list".format(w)):
+        s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
+        await splitsend(message.channel,s,False)
+        return
+		
+    if message.content.startswith("${}all".format(w)): #hidden feature. for testing
+        s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
+        await splitsend(message.channel,s,False)
+        return
+		
+    if message.content.startswith("${}help".format(w)):
+        s='''
+${0}help         this message
+${0}list         list of {0} items
+${0}add TEXT     adds text as a new item for {0} for THIS channel
+${0}drop ID    marks id as taken off {0}
+        '''. format(w)
+        await splitsend(message.channel,s,True)
+        return
+    if message.content.startswith("${}add".format(w)):
+        conts=message.content.split(maxsplit=1)[1]
+        db_c.execute('''insert into {} values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
+        conn.commit()
+        s='new {} item id: '.format(w) +str(db_c.lastrowid)
+        await splitsend(message.channel,s,False)
+        return
+        
+    if message.content.startswith("${}drop".format(w)):
+        conts=int(message.content.split(maxsplit=1)[1]) #consider adding reason option here
+        db_c.execute('''UPDATE {0} set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
+        conn.commit()
+        s='removed from {}: '.format(w) +str(conts)
+        await splitsend(message.channel,s,False)
+        return
+
 
 #function which provides functionality for a list-based bot "w"
 async def try_bot(w,message):
@@ -258,7 +265,8 @@ def thelist(w):
         q=q+thestring+'\n\n'
     return q
 
-def agendalist(x):
+
+def agendalist(x): #obselete
     q=''
     rows=db_c.execute('select * from agenda where filled=0 AND chan=?',(x,)).fetchall()
     for row in rows:
@@ -266,9 +274,24 @@ def agendalist(x):
         q=q+thestring+'\n\n'
     return q
 
-def agendalistall():
+def perchanlist(x,w):
+    q=''
+    rows=db_c.execute('select * from {} where filled=0 AND chan=?'.format(w),(x,)).fetchall()
+    for row in rows:
+        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])
+        q=q+thestring+'\n\n'
+    return q
+
+def agendalistall(): #obselete
     q=''
     rows=db_c.execute('select * from agenda where filled=0 ').fetchall()
+    for row in rows:
+        thestring='(id **{}**) chan:#{} From <@{}>:\n{}'.format(row[0],row[6], row[1],row[2])
+        q=q+thestring+'\n\n'
+    return q
+def perchanlistall(w):
+    q=''
+    rows=db_c.execute('select * from {} where filled=0 '.format(w)).fetchall()
     for row in rows:
         thestring='(id **{}**) chan:#{} From <@{}>:\n{}'.format(row[0],row[6], row[1],row[2])
         q=q+thestring+'\n\n'
@@ -293,11 +316,12 @@ def votelist(x):
 
 def checkon_database(): 
 #check if table exists in DB. if not, create it
+#this function is RIPE for automation, which would also be carried over to "on message"
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='gigs' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
         conn.commit()
-
+        
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='wanteds' ''')
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
@@ -312,6 +336,12 @@ def checkon_database():
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE agenda (agid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
         conn.commit()
+
+    db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='reading' ''')
+    if db_c.fetchone()[0]!=1:
+        db_c.execute('''CREATE TABLE reading (readingid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
+        conn.commit()
+
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='projects' ''')
     if db_c.fetchone()[0]!=1:
