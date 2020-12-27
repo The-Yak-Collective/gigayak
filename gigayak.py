@@ -334,7 +334,7 @@ def checkon_database():
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='agenda' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE agenda (agid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
+        db_c.execute('''CREATE TABLE agenda (agendaid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='reading' ''')
