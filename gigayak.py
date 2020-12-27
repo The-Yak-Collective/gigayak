@@ -345,12 +345,12 @@ def checkon_database():
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='projects' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE projects (pjid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, upvotes int, downvotes int, status text)''') 
-        conn.commit()
+        db_c.execute('''CREATE TABLE projects (pjid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, upvotes int, downvotes int, status text)''') #nonuniform id name
+        conn.commit() 
         
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='votes' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE votes (vid INTEGER PRIMARY KEY, creatorid text, pid INTEGER, updown int, contents text, createdat int)''') 
+        db_c.execute('''CREATE TABLE votes (vid INTEGER PRIMARY KEY, creatorid text, pid INTEGER, updown int, contents text, createdat int)''') #nonuniform id name
         conn.commit()
 
 async def dmchan(t):
