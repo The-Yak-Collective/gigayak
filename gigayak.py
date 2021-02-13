@@ -287,7 +287,7 @@ def thelist(w):
     rows=db_c.execute('select * from {}s where filled=0'.format(w)).fetchall()
     for row in rows:
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
-        q=q.append(thestring)
+        q.append(thestring)
     return q
 
 
