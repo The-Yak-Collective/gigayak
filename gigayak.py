@@ -38,7 +38,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client),  client.guilds)
     checkon_database()
     gig_chan=client.guilds[0].get_channel(GIG_CHAN)
-    update_gigchannel()
+    await update_gigchannel()
     return
 
 
