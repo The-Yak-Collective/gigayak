@@ -20,6 +20,8 @@ import datetime
 from dotenv import load_dotenv
 import sqlite3  #consider , "check_same_thread = False" on sqlite.connect()
 
+GIG_CHAN=810196195246211092
+gig_chan=0
 from discord_gigayak import *
 
 conn=sqlite3.connect('/home/yak/robot/gigayak/gigdatabase.db') #the connection should be global. 
@@ -32,8 +34,11 @@ load_dotenv('/home/yak/.env')
 
 @client.event #needed since it takes time to connect to discord
 async def on_ready(): 
+    global gig_chan
     print('We have logged in as {0.user}'.format(client),  client.guilds)
     checkon_database()
+    gig_chan=client.guilds[0].get_channel(GIG_CHAN)
+    update_gigchannel()
     return
 
 
@@ -221,7 +226,7 @@ async def try_bot(w,message):
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}list".format(w)):
-        s='list of outstanding {}s:\n\n'.format(w)+thelist(w)
+        s='list of outstanding {}s:\n\n'.format(w)+"\n\n".join(thelist(w))
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}help".format(w)):
@@ -239,6 +244,8 @@ ${0}drop {0}ID    marks {0}id as closed
         conn.commit()
         s='new {} id: '.format(w) +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
+        if message.content.startswith("$gig"):
+            await update_gigchannel()#later make general, if others have channels...
         return
         
     if message.content.startswith("${}drop".format(w)):
@@ -247,6 +254,8 @@ ${0}drop {0}ID    marks {0}id as closed
         conn.commit()
         s='marked as filled: ' +str(conts)
         await splitsend(message.channel,s,False)
+        if message.content.startswith("$gig"):
+            await update_gigchannel()#later make general, if others have channels...
         return
 
 def pjset(pid, field, value): #set any value. note execute cannot have ? type parameters, only values
@@ -255,14 +264,30 @@ def pjset(pid, field, value): #set any value. note execute cannot have ? type pa
 
     return
 
+async def delete_all_gig_messages(): #for now, only bot messages and only on gig_chan
+    def is_me(m):
+        return m.author == bot.user
+    deleted = await gig_chan.purge(limit=100, check=is_me)
 
+
+async def update_gigchannel():#later make it for multipel channels
+    await delete_all_gig_messages()
+    listofgigs=thelist("gig")
+    for e in listofgigs:
+        embed=discord.Embed(color=0xd12323)
+        tpos=e.index('**)')
+        id=e[6:tpos]
+        temp=e[tpos+4:] 
+        embed.add_field(name=id, value=temp, inline=False)
+        await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
+
 def thelist(w):
-    q=''
+    q=[]
     rows=db_c.execute('select * from {}s where filled=0'.format(w)).fetchall()
     for row in rows:
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
-        q=q+thestring+'\n\n'
+        q=q.append(thestring)
     return q
 
 
