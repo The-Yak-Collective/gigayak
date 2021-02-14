@@ -58,7 +58,7 @@ async def on_message(message):
     if message.author == client.user:
         return #ignore own messages to avoid loops
 		
-    dmtarget=await dmchan(message.author.id) #build backchannel to user, so we do not answer in general channel
+    dmtarget=await dmchan(message.author.id,message.channel) #build backchannel to user, so we do not answer in general channel
 
 #three bots that manage general lists
 #gigabot
@@ -378,10 +378,11 @@ def checkon_database():
         db_c.execute('''CREATE TABLE votes (vid INTEGER PRIMARY KEY, creatorid text, pid INTEGER, updown int, contents text, createdat int)''') #nonuniform id name
         conn.commit()
 
-async def dmchan(t):
+async def dmchan(t,c):
 #create DM channel betwen bot and user
     print("at dmchan:",t)
-    print(client.get_user(t))	
+    if !client.get_user(t):
+	return c #answer in same channel if no dm
     target=client.get_user(t).dm_channel
     if (not target): 
         print("need to create dm channel",flush=True)
