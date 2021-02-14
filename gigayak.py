@@ -381,7 +381,7 @@ def checkon_database():
 async def dmchan(t,c):
 #create DM channel betwen bot and user
     print("at dmchan:",t)
-    if !client.get_user(t):
+    if  not client.get_user(t):
 	return c #answer in same channel if no dm
     target=client.get_user(t).dm_channel
     if (not target): 
