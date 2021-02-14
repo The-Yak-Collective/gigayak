@@ -266,7 +266,7 @@ def pjset(pid, field, value): #set any value. note execute cannot have ? type pa
 
 async def delete_all_gig_messages(): #for now, only bot messages and only on gig_chan
     def is_me(m):
-        return m.author == bot.user
+        return m.author == client.user
     deleted = await gig_chan.purge(limit=100, check=is_me)
 
 
