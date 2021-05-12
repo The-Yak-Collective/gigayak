@@ -342,7 +342,7 @@ def tabledump(w): #dump all the table into q, but change creator id and chan int
         if h[1]=='chan':
             chcol=i
     for row in rows:
-        r1=row
+        r1=list(row)
         if idcol:
             r1[idcol]=client.get_user(int(r1[idcol])).name
         if chcol:
