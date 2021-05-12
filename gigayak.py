@@ -192,7 +192,7 @@ async def try_chan_bot(w,message):
     if message.content.startswith("${}out".format(w)):
         thestringlist=['/bin/bash', 'makethelist.bash', w]
         out = subprocess.Popen(thestringlist, 
-           cwd=HOME_DIR
+           cwd=HOME_DIR,
            stdout=subprocess.PIPE, 
            stderr=subprocess.STDOUT)
         #stdout,stderr = out.communicate()
