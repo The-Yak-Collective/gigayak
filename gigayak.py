@@ -200,7 +200,12 @@ async def try_chan_bot(w,message):
         await splitsend(message.channel,s,False)
         await message.channel.send("actual file:", file=discord.File(HOME_DIR+"thelist.csv"))
         return
-		
+    if message.content.startswith("${}show".format(w)):
+        q=await tabledump(w)
+        q1=[str(x) for x in q]
+        s="\n".join(q1)
+        await splitsend(message.channel,s,False)
+    return
     if message.content.startswith("${}all".format(w)): #hidden feature. for testing
         s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
         await splitsend(message.channel,s,False)
@@ -324,6 +329,27 @@ def perchanlist(x,w):
         thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])
         q=q+thestring+'\n\n'
     return q
+    
+async def tabledump(w): #dump all the table into q, but change creator id and chan into words
+    q=[]
+    rows=db_c.execute('select * from {}'.format(w)).fetchall()
+    heads=db_c.execute('pragma table_info({})'.format(w).fetchall()
+    idcol=None
+    chcol=None
+    for i,h in enumurate(heads):
+        if h[1]=='creatorid':
+            idcol=i
+        if h[1]=='chan':
+            chcol=i
+    for row in rows:
+        r1=row
+        if idcol:
+            r1[idcol]=await client.fetch_user(int(r1[idcol])).name
+        if chcol:
+            r1[idcol]=client.get_channel(int(r1[chcol])).name
+        q.append(r1)
+    return q
+
 
 def agendalistall(): #obselete
     q=''
