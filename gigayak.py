@@ -330,7 +330,7 @@ def perchanlist(x,w):
         q=q+thestring+'\n\n'
     return q
     
-async def tabledump(w): #dump all the table into q, but change creator id and chan into words
+def tabledump(w): #dump all the table into q, but change creator id and chan into words
     q=[]
     rows=db_c.execute('select * from {}'.format(w)).fetchall()
     heads=db_c.execute('pragma table_info({})'.format(w)).fetchall()
@@ -344,7 +344,7 @@ async def tabledump(w): #dump all the table into q, but change creator id and ch
     for row in rows:
         r1=row
         if idcol:
-            r1[idcol]=await client.fetch_user(int(r1[idcol])).name
+            r1[idcol]=client.get_user(int(r1[idcol])).name
         if chcol:
             r1[idcol]=client.get_channel(int(r1[chcol])).name
         q.append(r1)
