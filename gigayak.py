@@ -201,7 +201,7 @@ async def try_chan_bot(w,message):
         await message.channel.send("actual file:", file=discord.File(HOME_DIR+"thelist.csv"))
         return
     if message.content.startswith("${}show".format(w)):
-        q=await tabledump(w)
+        q=tabledump(w)
         q1=[str(x) for x in q]
         s="\n".join(q1)
         await splitsend(message.channel,s,False)
