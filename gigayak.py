@@ -198,7 +198,7 @@ async def try_chan_bot(w,message):
         #stdout,stderr = out.communicate()
         s='list of {} items in all channels coming up in next message'.format(w)
         await splitsend(message.channel,s,False)
-        await message.channel.send("actual file:", file=discord.File("thelist.csv"))
+        await message.channel.send("actual file:", file=discord.File(HOME_DIR+"thelist.csv"))
         return
 		
     if message.content.startswith("${}all".format(w)): #hidden feature. for testing
