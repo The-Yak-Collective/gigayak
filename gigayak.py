@@ -205,7 +205,7 @@ async def try_chan_bot(w,message):
         q1=[str(x) for x in q]
         s="\n".join(q1)
         await splitsend(message.channel,s,False)
-    return
+        return
     if message.content.startswith("${}all".format(w)): #hidden feature. for testing
         s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
         await splitsend(message.channel,s,False)
@@ -444,6 +444,7 @@ async def dmchan(t,c):
     if (not target): 
         print("need to create dm channel",flush=True)
         target=await client.get_user(t).create_dm()
+        print("target=",target)
     return target
 
 async def splitsend(ch,st,codeformat):
