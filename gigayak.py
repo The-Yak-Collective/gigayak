@@ -204,7 +204,7 @@ ${0}drop ID    marks id as taken off {0}
         return
     if message.content.startswith("${}add".format(w)):
         conts=message.content.split(maxsplit=1)[1]
-        db_c.execute('''insert into {} values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,message.channel.id))
+        db_c.execute('''insert into {} values (NULL,?,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,message.channel.id,message.jump_url))
         conn.commit()
         s='new {} item id: '.format(w) +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
@@ -234,13 +234,13 @@ async def try_bot(w,message):
 ${0}help          this message
 ${0}list          lists available {0}s
 ${0}add TEXT      adds text as a new {0} and returns a {0}id
-${0}drop {0}ID    marks {0}id as closed
+${0}drop {0}ID [REASON]   marks {0}id as closed. give optional reason
         '''.format(w)
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("${}add".format(w)):
         conts=message.content.split(maxsplit=1)[1]
-        db_c.execute('''insert into {}s values (NULL,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0))
+        db_c.execute('''insert into {}s values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,""))
         conn.commit()
         s='new {} id: '.format(w) +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
@@ -249,10 +249,14 @@ ${0}drop {0}ID    marks {0}id as closed
         return
         
     if message.content.startswith("${}drop".format(w)):
-        conts=int(message.content.split(maxsplit=1)[1])
-        db_c.execute('''UPDATE {0}s set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
+        thetmp=message.content.split(maxsplit=2)
+        conts=int(thetmp[1])
+        reason="none given"
+        if len(thetmp)>2:
+            reason=thetmp[2]
+        db_c.execute('''UPDATE {0}s set filled=1, filledat= ?, reason= ? where {0}id=? '''.format(w),(int(time.time()),conts,reason))
         conn.commit()
-        s='marked as filled: ' +str(conts)
+        s='marked as filled: ' +str(conts)+reason
         await splitsend(message.channel,s,False)
         if message.content.startswith("$gig"):
             await update_gigchannel()#later make general, if others have channels...
@@ -344,27 +348,27 @@ def checkon_database():
 #this function is RIPE for automation, which would also be carried over to "on message"
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='gigs' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        db_c.execute('''CREATE TABLE gigs (gigid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, reason text)''') 
         conn.commit()
         
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='wanteds' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        db_c.execute('''CREATE TABLE wanteds (wantedid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, reason text)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='newsitems' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE newsitems (newsitemid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int)''') 
+        db_c.execute('''CREATE TABLE newsitems (newsitemid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, reason text)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='agenda' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE agenda (agendaid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
+        db_c.execute('''CREATE TABLE agenda (agendaid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int, mlink text)''') 
         conn.commit()
 
     db_c.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='reading' ''')
     if db_c.fetchone()[0]!=1:
-        db_c.execute('''CREATE TABLE reading (readingid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int)''') 
+        db_c.execute('''CREATE TABLE reading (readingid INTEGER PRIMARY KEY, creatorid text, contents text, filled int, createdat int, filledat int, chan int, mlink text)''') 
         conn.commit()
 
 
