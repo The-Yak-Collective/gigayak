@@ -196,7 +196,7 @@ async def try_chan_bot(w,message):
            stdout=subprocess.PIPE, 
            stderr=subprocess.STDOUT)
         #stdout,stderr = out.communicate()
-        s='list of {} items in all channels coming up'.format(w)
+        s='list of {} items in all channels coming up in next message'.format(w)
         await splitsend(message.channel,s,False)
         await message.channel.send("actual file:", file=discord.File("thelist.csv"))
         return
