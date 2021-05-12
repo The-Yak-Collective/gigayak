@@ -346,7 +346,7 @@ def tabledump(w): #dump all the table into q, but change creator id and chan int
         if idcol:
             r1[idcol]=client.get_user(int(r1[idcol])).name
         if chcol:
-            r1[idcol]=client.get_channel(int(r1[chcol])).name
+            r1[chcol]=client.get_channel(int(r1[chcol])).name
         q.append(r1)
     return q
 
