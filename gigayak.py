@@ -218,6 +218,7 @@ ${0}list         list of {0} items
 ${0}add TEXT     adds text as a new item for {0} for THIS channel
 ${0}drop ID    marks id as taken off {0}
 ${0}out         output a csv file with all items in sqlite3 table
+${0}show        output as a message, all items in sqlitetable
         '''. format(w)
         await splitsend(message.channel,s,True)
         return
@@ -254,9 +255,15 @@ ${0}help          this message
 ${0}list          lists available {0}s
 ${0}add TEXT      adds text as a new {0} and returns a {0}id
 ${0}drop {0}ID [REASON]   marks {0}id as closed. give optional reason
+${0}show            message with table contents dump
         '''.format(w)
         await splitsend(message.channel,s,True)
         return
+    if message.content.startswith("${}show".format(w)):
+        q=tabledump(w)
+        q1=[str(x) for x in q]
+        s="\n".join(q1)
+        await splitsend(message.channel,s,False)
     if message.content.startswith("${}add".format(w)):
         conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into {}s values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,""))
