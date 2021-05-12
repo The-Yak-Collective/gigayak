@@ -254,7 +254,7 @@ ${0}drop {0}ID [REASON]   marks {0}id as closed. give optional reason
         reason="none given"
         if len(thetmp)>2:
             reason=thetmp[2]
-        db_c.execute('''UPDATE {0}s set filled=1, filledat= ?, reason= ? where {0}id=? '''.format(w),(int(time.time()),conts,reason))
+        db_c.execute('''UPDATE {0}s set filled=1, filledat= ?, reason= ? where {0}id=? '''.format(w),(int(time.time()),reason,conts))
         conn.commit()
         s='marked as filled: ' +str(conts)+reason
         await splitsend(message.channel,s,False)
