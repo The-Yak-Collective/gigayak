@@ -336,7 +336,7 @@ async def tabledump(w): #dump all the table into q, but change creator id and ch
     heads=db_c.execute('pragma table_info({})'.format(w)).fetchall()
     idcol=None
     chcol=None
-    for i,h in enumurate(heads):
+    for i,h in enumerate(heads):
         if h[1]=='creatorid':
             idcol=i
         if h[1]=='chan':
