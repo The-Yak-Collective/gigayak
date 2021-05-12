@@ -333,7 +333,7 @@ def perchanlist(x,w):
 async def tabledump(w): #dump all the table into q, but change creator id and chan into words
     q=[]
     rows=db_c.execute('select * from {}'.format(w)).fetchall()
-    heads=db_c.execute('pragma table_info({})'.format(w).fetchall()
+    heads=db_c.execute('pragma table_info({})'.format(w)).fetchall()
     idcol=None
     chcol=None
     for i,h in enumurate(heads):
