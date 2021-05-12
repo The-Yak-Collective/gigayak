@@ -15,6 +15,7 @@ from discord.ext import tasks, commands
 import discord
 import asyncio
 import os
+import subprocess
 import time
 import datetime
 from dotenv import load_dotenv
@@ -23,13 +24,14 @@ import sqlite3  #consider , "check_same_thread = False" on sqlite.connect()
 GIG_CHAN=810196195246211092
 gig_chan=0
 from discord_gigayak import *
-
-conn=sqlite3.connect('/home/yak/robot/gigayak/gigdatabase.db') #the connection should be global. 
+HOME_DIR="/home/yak/robot/gigayak/"
+USER_DIR="/home/yak/"
+conn=sqlite3.connect(HOME_DIR+'gigdatabase.db') #the connection should be global. 
 
 db_c = conn.cursor()
 
 
-load_dotenv('/home/yak/.env')
+load_dotenv(USER_DIR+'.env')
 
 
 @client.event #needed since it takes time to connect to discord
@@ -187,6 +189,17 @@ async def try_chan_bot(w,message):
         s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
         await splitsend(message.channel,s,False)
         return
+    if message.content.startswith("${}out".format(w)):
+        thestringlist=['/bin/bash', 'makethelist.bash', w]
+        out = subprocess.Popen(thestringlist, 
+           cwd=HOME_DIR
+           stdout=subprocess.PIPE, 
+           stderr=subprocess.STDOUT)
+        #stdout,stderr = out.communicate()
+        s='list of {} items in all channels coming up'.format(w)
+        await splitsend(message.channel,s,False)
+        await message.channel.send("actual file:", file=discord.File("thelist.csv"))
+        return
 		
     if message.content.startswith("${}all".format(w)): #hidden feature. for testing
         s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
@@ -199,6 +212,7 @@ ${0}help         this message
 ${0}list         list of {0} items
 ${0}add TEXT     adds text as a new item for {0} for THIS channel
 ${0}drop ID    marks id as taken off {0}
+${0}out         output a csv file with all items in sqlite3 table
         '''. format(w)
         await splitsend(message.channel,s,True)
         return
