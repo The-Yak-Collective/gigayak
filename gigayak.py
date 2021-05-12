@@ -260,7 +260,7 @@ ${0}show            message with table contents dump
         await splitsend(message.channel,s,True)
         return
     if message.content.startswith("${}show".format(w)):
-        q=tabledump(w)
+        q=tabledump(w+'s')
         q1=[str(x) for x in q]
         s="\n".join(q1)
         await splitsend(message.channel,s,False)
