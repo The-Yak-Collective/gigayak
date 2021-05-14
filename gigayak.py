@@ -278,11 +278,13 @@ ${0}show            message with table contents dump
         thetmp=message.content.split(maxsplit=2)
         conts=int(thetmp[1])
         reason="none given"
+        remark="you may add a reason for marking as filled by typing ${}drop ID REASON".format(w)
         if len(thetmp)>2:
             reason=thetmp[2]
+            remark=""
         db_c.execute('''UPDATE {0}s set filled=1, filledat= ?, reason= ? where {0}id=? '''.format(w),(int(time.time()),reason,conts))
         conn.commit()
-        s='marked as filled: ' +str(conts)+reason
+        s='marked as filled: ' +str(conts)+" "+reason+"\n"+remark
         await splitsend(message.channel,s,False)
         if message.content.startswith("$gig"):
             await update_gigchannel()#later make general, if others have channels...
