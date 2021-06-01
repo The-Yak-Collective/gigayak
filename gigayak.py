@@ -190,6 +190,7 @@ async def try_chan_bot(w,message):
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}out".format(w)):
+
         thestringlist=['/bin/bash', 'makethelist.bash', w]
         out = subprocess.Popen(thestringlist, 
            cwd=HOME_DIR,
@@ -201,8 +202,16 @@ async def try_chan_bot(w,message):
         await message.channel.send("actual file:", file=discord.File(HOME_DIR+"thelist.csv"))
         return
     if message.content.startswith("${}show".format(w)):
+        conts=message.content.split(maxsplit=1)
+        if len(conts)>1:
+            nod=int(conts[1])
+        if nod==0:
+            nod=1000
         q=tabledump(w)
-        q1=[str(x) for x in q]
+        now=datetime.utcnow()
+        wh=now-timedelta(days=nod)
+        thresh=int(wh.timestamp())
+        q1=[str(x) for x in q if int(x[4])>thresh]
         s="\n".join(q1)
         await splitsend(message.channel,s,False)
         return
