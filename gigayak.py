@@ -231,7 +231,7 @@ ${0}list         list of {0} items
 ${0}add TEXT     adds text as a new item for {0} for THIS channel
 ${0}drop ID    marks id as taken off {0}
 ${0}out         output a csv file with all items in sqlite3 table
-${0}show        output as a message, all items in sqlitetable
+${0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBACK) in sqlitetable
         '''. format(w)
         await splitsend(message.channel,s,True)
         return
