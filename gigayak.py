@@ -208,8 +208,8 @@ async def try_chan_bot(w,message):
         if nod==0:
             nod=1000
         q=tabledump(w)
-        now=datetime.utcnow()
-        wh=now-timedelta(days=nod)
+        now=datetime.datetime.utcnow()
+        wh=now-datetime.timedelta(days=nod)
         thresh=int(wh.timestamp())
         print(thresh,q[0])
         q1=[str(x) for x in q if int(x[4])>thresh]
