@@ -203,6 +203,7 @@ async def try_chan_bot(w,message):
         return
     if message.content.startswith("${}show".format(w)):
         conts=message.content.split(maxsplit=1)
+        nod=0
         if len(conts)>1:
             nod=int(conts[1])
         if nod==0:
@@ -214,6 +215,8 @@ async def try_chan_bot(w,message):
         print(thresh,q[0])
         q1=[str(x) for x in q if int(x[4])>thresh]
         s="\n".join(q1)
+        if not s:
+            s="no agenda items to show\n"
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}all".format(w)): #hidden feature. for testing
