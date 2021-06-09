@@ -244,7 +244,7 @@ ${0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBA
         return
         
     if message.content.startswith("${}drop".format(w)):
-        conts=int(message.content.split(maxsplit=1)[1]) #consider adding reason option here
+        conts=int(message.content.split(maxsplit=2)[1]) #consider adding reason option here
         db_c.execute('''UPDATE {0} set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
         s='removed from {}: '.format(w) +str(conts)
