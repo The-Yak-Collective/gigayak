@@ -77,7 +77,7 @@ async def on_message(message):
 #jagendalist
     if message.content.startswith("$jagendalist"):
         cont=message.content.split(maxsplit=4)
-        s='jagendalist {},{}'.format(cont[0],cont[1])
+        s='jagendalist {},{},{}'.format(cont[0],cont[1][0:5],cont[1][6:])
         await splitsend(message.channel,s,False)
         return
         s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
