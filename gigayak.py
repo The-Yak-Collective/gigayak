@@ -76,11 +76,10 @@ async def on_message(message):
     await try_chan_bot('reading',message)
 #jagendalist
     if message.content.startswith("$jagendalist"):
-        cont=message.content.split(maxsplit=4)
-        s='jagendalist {},{},{}'.format(cont[0],cont[1][0:5],cont[1][6:])
-        await splitsend(message.channel,s,False)
-        return
-        s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
+        cont=message.content.split(maxsplit=2)
+        chan_num=cont[1][2:-1]
+        w="agenda"
+        s='list of {} items in this channel:\n\n'.format(w)+perchanlist(int(chan_num),w)
         await splitsend(message.channel,s,False)
         return
 #projbot - vote on projects
