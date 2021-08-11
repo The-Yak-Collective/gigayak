@@ -355,7 +355,8 @@ def perchanlist(x,w):
     q=''
     rows=db_c.execute('select * from {} where filled=0 AND chan=?'.format(w),(x,)).fetchall()
     for row in rows:
-        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])
+        thedate=datetime.datetime.fromtimestamp(row[4]).strftime('%Y-%m-%d')
+        thestring='(id **{}**) From <@{}> {}:\n{}'.format(row[0],row[1],thedate,row[2])
         q=q+thestring+'\n\n'
     return q
     
