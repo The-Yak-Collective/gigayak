@@ -75,7 +75,7 @@ async def on_message(message):
 #agendabot - readinglist per channel
     await try_chan_bot('reading',message)
 #jagendalist
-    if message.content.startswith("$jagendalist"):
+    if message.content.startswith("$jagendalist") or message.content.startswith("/jagendalist"):
         cont=message.content.split(maxsplit=2)
         chan_num=cont[1][2:-1]
         w="agenda"
@@ -83,33 +83,33 @@ async def on_message(message):
         await splitsend(message.channel,s,False)
         return
 #projbot - vote on projects
-    if message.content.startswith("$projtest"):
+    if message.content.startswith("$projtest") or message.content.startswith("/projtest"):
         s='this is a test response from projbot'
         await splitsend(message.channel,s,False)
         return
 		
-    if message.content.startswith("$projlist"):
+    if message.content.startswith("$projlist") or message.content.startswith("/projlist"):
         s='list of open projects:\n\n'+projlist()
         await splitsend(message.channel,s,False)
         return
 		
-    if message.content.startswith("$projhelp"):
+    if message.content.startswith("$projhelp") or message.content.startswith("/projhelp"):
         s='''
-$projhelp               this message
-$projlist               list of open projects
-$projadd TEXT           adds text as a new project. recommended format: short-name blurb roam-link
-$projnewtext PJID TEXT  changes the text of PJID
-$proj+ PJID TEXT        upvote this project; give a reason if you want
-$proj- PJID TEXT        upvote this project; give a reason if you want
-$projvotes PJID         lists all votes and reasons for project PJID
-$projdrop PJID          marks PJID as taken off agenda
+/projhelp               this message
+/projlist               list of open projects
+/projadd TEXT           adds text as a new project. recommended format: short-name blurb roam-link
+/projnewtext PJID TEXT  changes the text of PJID
+/proj+ PJID TEXT        upvote this project; give a reason if you want
+/proj- PJID TEXT        upvote this project; give a reason if you want
+/projvotes PJID         lists all votes and reasons for project PJID
+/projdrop PJID          marks PJID as taken off agenda
 
 go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a new project
         '''
 #$projset PJID FIELD VALUE sets field to value in pjid
         await splitsend(message.channel,s,True)
         return
-    if message.content.startswith("$projadd"):
+    if message.content.startswith("$projadd") or message.content.startswith("/projadd"):
         conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into projects values (NULL,?,?,?,?,?,?,?,?)''',(str(message.author.id),conts,0,int(time.time()),0,0,0,""))
         conn.commit()
@@ -117,7 +117,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$projset"): #hidden feature
+    if message.content.startswith("$projset") or message.content.startswith("/projset"): #hidden feature
         cmd=message.content.split(maxsplit=3)
         if len(cmd)<3:
             return
@@ -129,7 +129,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$projnewtext"): #instead of exiting text
+    if message.content.startswith("$projnewtext") or message.content.startswith("/projnewtext"): #instead of exiting text
         cmd=message.content.split(maxsplit=2)
         if len(cmd)<3:
             return
@@ -141,7 +141,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$proj+"):
+    if message.content.startswith("$proj+") or message.content.startswith("/proj+"):
         cmd=message.content.split(maxsplit=2)
         if len(cmd)<2:
             return
@@ -155,7 +155,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         conn.commit()
         return
         
-    if message.content.startswith("$proj-"):
+    if message.content.startswith("$proj-") or message.content.startswith("/proj-"):
         cmd=message.content.split(maxsplit=2)
         if len(cmd)<2:
             return
@@ -169,7 +169,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         conn.commit()
         return
         
-    if message.content.startswith("$projvotes"):
+    if message.content.startswith("$projvotes") or message.content.startswith("/projvotes"):
         cmd=message.content.split(maxsplit=1)
         if len(cmd)<2:
             return
@@ -177,7 +177,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         await splitsend(message.channel,s,False)
         return
 
-    if message.content.startswith("$projdrop"):
+    if message.content.startswith("$projdrop") or message.content.startswith("/projdrop"):
         conts=int(message.content.split(maxsplit=1)[1])
         db_c.execute('''UPDATE projects set filled=1, filledat= ? where pjid=? ''',(int(time.time()),conts))
         conn.commit()
@@ -187,16 +187,16 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
 
 #function which provides functionality for a per-channel list-based bot "w"
 async def try_chan_bot(w,message):
-    if message.content.startswith("${}test".format(w)):
+    if message.content.startswith("${}test".format(w)) or message.content.startswith("/{}test".format(w)):
         s='this is a test response from {}bot'.format(w)
         await splitsend(message.channel,s,False)
         return
 		
-    if message.content.startswith("${}list".format(w)):
+    if message.content.startswith("${}list".format(w)) or message.content.startswith("/{}list".format(w)):
         s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
         await splitsend(message.channel,s,False)
         return
-    if message.content.startswith("${}out".format(w)):
+    if message.content.startswith("${}out".format(w)) or message.content.startswith("/{}out".format(w)):
 
         thestringlist=['/bin/bash', 'makethelist.bash', w]
         out = subprocess.Popen(thestringlist, 
@@ -208,7 +208,7 @@ async def try_chan_bot(w,message):
         await splitsend(message.channel,s,False)
         await message.channel.send("actual file:", file=discord.File(HOME_DIR+"thelist.csv"))
         return
-    if message.content.startswith("${}show".format(w)):
+    if message.content.startswith("${}show".format(w)) or message.content.startswith("/{}show".format(w)):
         conts=message.content.split(maxsplit=1)
         nod=0
         if len(conts)>1:
@@ -226,23 +226,23 @@ async def try_chan_bot(w,message):
             s="no agenda items to show\n"
         await splitsend(message.channel,s,False)
         return
-    if message.content.startswith("${}all".format(w)): #hidden feature. for testing
+    if message.content.startswith("${}all".format(w)) or message.content.startswith("/{}all".format(w)): #hidden feature. for testing
         s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
         await splitsend(message.channel,s,False)
         return
 		
     if message.content.startswith("${}help".format(w)):
         s='''
-${0}help         this message
-${0}list         list of {0} items
-${0}add TEXT     adds text as a new item for {0} for THIS channel
-${0}drop ID    marks id as taken off {0}
-${0}out         output a csv file with all items in sqlite3 table
-${0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBACK) in sqlitetable
+/{0}help         this message
+/{0}list         list of {0} items
+/{0}add TEXT     adds text as a new item for {0} for THIS channel
+/{0}drop ID    marks id as taken off {0}
+/{0}out         output a csv file with all items in sqlite3 table
+/{0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBACK) in sqlitetable
         '''. format(w)
         await splitsend(message.channel,s,True)
         return
-    if message.content.startswith("${}add".format(w)):
+    if message.content.startswith("${}add".format(w)) or message.content.startswith("/{}add".format(w)):
         conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into {} values (NULL,?,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,message.channel.id,message.jump_url))
         conn.commit()
@@ -250,7 +250,7 @@ ${0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBA
         await splitsend(message.channel,s,False)
         return
         
-    if message.content.startswith("${}drop".format(w)): 
+    if message.content.startswith("${}drop".format(w)) or message.content.startswith("/{}drop".format(w)): 
         conts=int(message.content.split(maxsplit=2)[1]) #consider adding reason option here
         db_c.execute('''UPDATE {0} set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
@@ -261,40 +261,40 @@ ${0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBA
 
 #function which provides functionality for a list-based bot "w"
 async def try_bot(w,message):
-    if message.content.startswith("${}test".format(w)):
+    if message.content.startswith("${}test".format(w)) or message.content.startswith("/{}test".format(w)):
         s='this is a test response from {}bot'.format(w)
         await splitsend(message.channel,s,False)
         return
-    if message.content.startswith("${}list".format(w)):
+    if message.content.startswith("${}list".format(w)) or message.content.startswith("/{}list".format(w)):
         s='list of outstanding {}s:\n\n'.format(w)+"\n\n".join(thelist(w))
         await splitsend(message.channel,s,False)
         return
-    if message.content.startswith("${}help".format(w)):
+    if message.content.startswith("${}help".format(w)) or message.content.startswith("/{}help".format(w)):
         s='''
-${0}help          this message
-${0}list          lists available {0}s
-${0}add TEXT      adds text as a new {0} and returns a {0}id
-${0}drop {0}ID [REASON]   marks {0}id as closed. give optional reason
-${0}show            message with table contents dump
+/{0}help          this message
+/{0}list          lists available {0}s
+/{0}add TEXT      adds text as a new {0} and returns a {0}id
+/{0}drop {0}ID [REASON]   marks {0}id as closed. give optional reason
+/{0}show            message with table contents dump
         '''.format(w)
         await splitsend(message.channel,s,True)
         return
-    if message.content.startswith("${}show".format(w)):
+    if message.content.startswith("${}show".format(w)) or message.content.startswith("/{}show".format(w)):
         q=tabledump(w+'s')
         q1=[str(x) for x in q]
         s="\n".join(q1)
         await splitsend(message.channel,s,False)
-    if message.content.startswith("${}add".format(w)):
+    if message.content.startswith("${}add".format(w)) or message.content.startswith("/{}add".format(w)):
         conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into {}s values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,""))
         conn.commit()
         s='new {} id: '.format(w) +str(db_c.lastrowid)
         await splitsend(message.channel,s,False)
-        if message.content.startswith("$gig"):
+        if message.content.startswith("$gig") or message.content.startswith("/gig"):
             await update_gigchannel()#later make general, if others have channels...
         return
         
-    if message.content.startswith("${}drop".format(w)):
+    if message.content.startswith("${}drop".format(w)) or message.content.startswith("/{}drop".format(w)):
         thetmp=message.content.split(maxsplit=2)
         conts=int(thetmp[1])
         reason="none given"
@@ -306,7 +306,7 @@ ${0}show            message with table contents dump
         conn.commit()
         s='marked as filled: ' +str(conts)+" "+reason+"\n"+remark
         await splitsend(message.channel,s,False)
-        if message.content.startswith("$gig"):
+        if message.content.startswith("$gig") or message.content.startswith("/gig"):
             await update_gigchannel()#later make general, if others have channels...
         return
 
