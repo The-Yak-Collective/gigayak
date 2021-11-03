@@ -15,6 +15,7 @@ from discord.ext import tasks, commands
 import discord
 import asyncio
 import os
+import re
 import subprocess
 import time
 import datetime
@@ -194,6 +195,7 @@ async def try_chan_bot(w,message):
 		
     if message.content.startswith("${}list".format(w)):
         s='list of {} items in this channel:\n\n'.format(w)+perchanlist(message.channel.id,w)
+        s=re.sub('(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)',r'<\1>',s)#work in progress!
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}out".format(w)):
