@@ -239,6 +239,7 @@ async def try_chan_bot(w,message):
 /{0}list         list of {0} items
 /{0}add TEXT     adds text as a new item for {0} for THIS channel
 /{0}drop ID    marks id as taken off {0}
+/{0}alldrop     marks all ids as taken off {0}
 /{0}out         output a csv file with all items in sqlite3 table
 /{0}show [DAYSBACK]       output as a message, all items (optionally only DAYSBACK) in sqlitetable
         '''. format(w)
@@ -257,6 +258,13 @@ async def try_chan_bot(w,message):
         db_c.execute('''UPDATE {0} set filled=1, filledat= ? where {0}id=? '''.format(w),(int(time.time()),conts))
         conn.commit()
         s='removed from {}: '.format(w) +str(conts)
+        await splitsend(message.channel,s,False)
+        return
+    if message.content.startswith("${}alldrop".format(w)): 
+        conts=int(message.content.split(maxsplit=2)[1]) #consider adding reason option here
+        db_c.execute('''UPDATE {0} set filled=1, filledat= ? where chan=?'''.format(w),(int(time.time()), message.channel.id))
+        conn.commit()
+        s='removed from {}: '.format(w) +str("all items")
         await splitsend(message.channel,s,False)
         return
 
