@@ -41,7 +41,7 @@ async def test_tick():
     nowish=int(time.time())
     rows=db_c.execute('select * from gigs where filled=0 and createdat<?',(nowish-30*24*3600,)).fetchall()
     for row in rows:
-        print("i would close gig id",row[0]
+        print("i would close gig id",row[0])
         #db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
         #conn.commit()
         try:
