@@ -21,6 +21,7 @@ import time
 import datetime
 from dotenv import load_dotenv
 import sqlite3  #consider , "check_same_thread = False" on sqlite.connect()
+import logging
 
 GIG_CHAN=810196195246211092
 gig_chan=0
@@ -48,8 +49,10 @@ async def test_tick():
             tellto=await dmchan(int(row[1]),0)
             #splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
             print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]))
-        except:
+        except Exception as ex:
             print("unable to notify re: ", row)
+            print("because of: ", ex)
+            print(logging.traceback.format_exc())
     if len(rows)>0:
        await update_gigchannel()
     pass
