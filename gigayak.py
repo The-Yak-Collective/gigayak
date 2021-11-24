@@ -45,7 +45,7 @@ async def test_tick():
         print("i would close gig id",row[0])
         try:
             tellto=await dmchan(int(row[1]),0)
-            splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
+            splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[2]).format(row[0]),False)
             #print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+str(row[2])).format(row[0]))
             db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
             conn.commit()
