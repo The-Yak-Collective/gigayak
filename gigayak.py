@@ -48,7 +48,7 @@ async def test_tick():
         try:
             tellto=await dmchan(int(row[1]),0)
             #splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
-            print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+str(row[3])).format(row[0]))
+            print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+str(row[2])).format(row[0]))
         except Exception as ex:
             print("unable to notify re: ", row)
             print("because of: ", ex)
