@@ -61,6 +61,7 @@ async def on_ready():
     checkon_database()
     gig_chan=client.guilds[0].get_channel(GIG_CHAN)
     await update_gigchannel()
+    test_tick.start()
     return
 
 
