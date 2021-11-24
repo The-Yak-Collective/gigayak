@@ -34,7 +34,26 @@ db_c = conn.cursor()
 
 load_dotenv(USER_DIR+'.env')
 
-
+@tasks.loop(seconds=3600.0*24) #once a day kill old gigs
+async def test_tick():
+    print("running tick")
+    reason="went stale after 30 days"
+    nowish=int(time.time())
+    rows=db_c.execute('select * from gigs where filled=0 and createdat<?',(nowish-30*24*3600,)).fetchall()
+    for row in rows:
+        print("i would close gig id",row[0]
+        #db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
+        #conn.commit()
+        try:
+            tellto=dmchan(int(row[1]),0)
+            #splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
+            print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]))
+        except:
+            print("unable to notify re: ", row)
+    if len(rows)>0:
+       await update_gigchannel()
+    pass
+    
 @client.event #needed since it takes time to connect to discord
 async def on_ready(): 
     global gig_chan
@@ -298,7 +317,10 @@ async def try_bot(w,message):
         conts=message.content.split(maxsplit=1)[1]
         db_c.execute('''insert into {}s values (NULL,?,?,?,?,?,?)'''.format(w),(str(message.author.id),conts,0,int(time.time()),0,""))
         conn.commit()
-        s='new {} id: '.format(w) +str(db_c.lastrowid)
+        specialstring=""
+        if message.content.startswith("$gig") or message.content.startswith("/gig"):
+            specialstring=" . new gigs will be declared stale after 30 days and deleted."
+        s='new {} id: '.format(w) +str(db_c.lastrowid)+specialstring
         await splitsend(message.channel,s,False)
         if message.content.startswith("$gig") or message.content.startswith("/gig"):
             await update_gigchannel()#later make general, if others have channels...
