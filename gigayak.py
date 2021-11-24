@@ -43,12 +43,12 @@ async def test_tick():
     rows=db_c.execute('select * from gigs where filled=0 and createdat<?',(nowish-30*24*3600,)).fetchall()
     for row in rows:
         print("i would close gig id",row[0])
-        #db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
-        #conn.commit()
         try:
             tellto=await dmchan(int(row[1]),0)
-            #splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
-            print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+str(row[2])).format(row[0]))
+            splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[3]).format(row[0]),False)
+            #print("i would splitsend",tellto,("closed gig id {} because it went stale after 30 days:\n"+str(row[2])).format(row[0]))
+            db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
+            conn.commit()
         except Exception as ex:
             print("unable to notify re: ", row)
             print("because of: ", ex)
