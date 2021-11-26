@@ -367,9 +367,9 @@ async def update_gigchannel():#later make it for multipel channels
         id=e[6:tpos]
         temp=e[tpos+4:]
         embed.add_field(name=id, value=temp[:1000], inline=False)
-        if len(temp)>1000:
+        if len(temp)>1000: #feild length limited to 1024 chars
             for x in range(1000,len(temp),1000):
-                embed.add_field(name=id+" cont", value=temp[x:x+1000], inline=False)
+                embed.add_field(name="", value=temp[x:x+1000], inline=True)
         await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
 
