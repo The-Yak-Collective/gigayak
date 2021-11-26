@@ -532,9 +532,10 @@ def cutup(s,lim): #generalise message split into array. shoudl be used for split
     if len(s)<lim: 
         return[s]
     else:
-        x=s.rfind('\n',int(lim*0.5),int(lim*0.9))
-        x=lim if x<0 else x
-        return [s[0:x]]+[cutup(s[x:],lim)]
+        x=s.rfind('\n',int(lim*0.2),int(lim*0.9))
+        x=lim if x<0 or x>lim else x
+        j=cutup(s[x:],lim)
+        return [s[0:x]]+j
 
 discord_token=os.getenv('GIGAYAK_DISCORD_KEY')
 client.run(discord_token) 
