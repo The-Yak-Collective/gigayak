@@ -369,6 +369,7 @@ async def update_gigchannel():#later make it for multipel channels
         embed.add_field(name=id, value=temp[:1000], inline=False)
         if len(temp)>1000: #field length limited to 1024 chars
             sar=cutup(temp,1000)
+            print(sar)
             for x in sar:
                 embed.add_field(name="\u200B", value=x, inline=False)
 #            for x in range(1000,len(temp),1000):
@@ -531,7 +532,7 @@ def cutup(s,lim): #generalise message split into array. shoudl be used for split
     if len(s)<lim: 
         return[s]
     else:
-        x=s.rfind('\n',0,int(lim*0.9))
+        x=max(s.rfind('\n',int(lim*0.5),int(lim*0.9)),lim)
         return list(s[0:x])+list(cutup(s[x+1:],lim))
 
 discord_token=os.getenv('GIGAYAK_DISCORD_KEY')
