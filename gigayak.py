@@ -366,14 +366,16 @@ async def update_gigchannel():#later make it for multipel channels
         tpos=e.index('**)')
         id=e[6:tpos]
         temp=e[tpos+4:]
-        embed.add_field(name=id, value=temp[:1000], inline=False)
+        thename=id #trickey use of setting value
         if len(temp)>1000: #field length limited to 1024 chars
             sar=cutup(temp,1000)
             print(sar)
             for x in sar:
-                embed.add_field(name="\u200B", value=x, inline=False)
-#            for x in range(1000,len(temp),1000):
-#                embed.add_field(name="\u200B", value=temp[x:x+1000], inline=False)
+                embed.add_field(name=thename, value=x, inline=False)
+                thename="\u200B"
+        else:
+            embed.add_field(name=thename, value=temp, inline=False)
+
         await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
 
