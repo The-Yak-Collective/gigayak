@@ -365,8 +365,11 @@ async def update_gigchannel():#later make it for multipel channels
         embed=discord.Embed(color=0xd12323)
         tpos=e.index('**)')
         id=e[6:tpos]
-        temp=e[tpos+4:] 
-        embed.add_field(name=id, value=temp, inline=False)
+        temp=e[tpos+4:]
+        embed.add_field(name=id, value=temp[:1000], inline=False)
+        if len(temp>1000):
+            for x in range(1000,len(temp),1000):
+                embed.add_field(name=id+" cont", value=temp[x:x+1000], inline=False)
         await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
 
