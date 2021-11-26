@@ -367,9 +367,12 @@ async def update_gigchannel():#later make it for multipel channels
         id=e[6:tpos]
         temp=e[tpos+4:]
         embed.add_field(name=id, value=temp[:1000], inline=False)
-        if len(temp)>1000: #feild length limited to 1024 chars
-            for x in range(1000,len(temp),1000):
-                embed.add_field(name="\u200B", value=temp[x:x+1000], inline=True)
+        if len(temp)>1000: #field length limited to 1024 chars
+            sar=cutup(temp,1000)
+            for x in sar:
+                embed.add_field(name="\u200B", value=x, inline=False)
+#            for x in range(1000,len(temp),1000):
+#                embed.add_field(name="\u200B", value=temp[x:x+1000], inline=False)
         await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
 
@@ -523,6 +526,13 @@ async def splitsend(ch,st,codeformat):
         else:
             await ch.send(st[0:x])
         await splitsend(ch,st[x+1:],codeformat)
+
+def cutup(s,lim): #generalise message split into array. shoudl be used for splitsend
+    if len(s)<lim: 
+        return[s]
+    else:
+        x=s.rfind('\n',0,int(lim*0.9))
+        return list(s[0:x], cutup(s[x+1:],lim))
 
 discord_token=os.getenv('GIGAYAK_DISCORD_KEY')
 client.run(discord_token) 
