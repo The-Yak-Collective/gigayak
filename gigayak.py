@@ -252,7 +252,7 @@ async def try_chan_bot(w,message):
         await splitsend(message.channel,s,False)
         return
     if message.content.startswith("${}all".format(w)) or message.content.startswith("/{}all".format(w)): #hidden feature. for testing
-        s='list of {} items in all channels:\n\n'.format(w)+perchanlistall()
+        s='list of {} items in all channels:\n\n'.format(w)+perchanlistall_quote() #quoted to reduce noise
         await splitsend(message.channel,s,False)
         return
 		
@@ -379,11 +379,14 @@ async def update_gigchannel():#later make it for multipel channels
         await gig_chan.send(embed=embed)
 #series of functions which generate formatted lists from the DB
 
-def thelist(w):
+def thelist(w,q=False):#here i do want people to get paged
     q=[]
     rows=db_c.execute('select * from {}s where filled=0'.format(w)).fetchall()
     for row in rows:
-        thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
+        if q:
+            thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],client.get_user(int(row[1])).name,row[2])
+        else:
+            thestring='(id **{}**) From <@{}>:\n{}'.format(row[0],row[1],row[2])#was client.get_user(int(row[1])).name, but this way discord parses
         q.append(thestring)
     return q
 
@@ -396,12 +399,16 @@ def agendalist(x): #obselete
         q=q+thestring+'\n\n'
     return q
 
-def perchanlist(x,w):
+def perchanlist(x,w,q=True):#here default is not discord mention
     q=''
     rows=db_c.execute('select * from {} where filled=0 AND chan=?'.format(w),(x,)).fetchall()
     for row in rows:
         thedate=datetime.datetime.fromtimestamp(row[4]).strftime('%Y-%m-%d')
-        thestring='(id **{}**) From <@{}> {}:\n{}'.format(row[0],row[1],thedate,row[2])
+        if q: #quote name rather that discord active name
+            name=client.get_user(int(row[1])).name
+            thestring='(id **{}**) From {} {}:\n{}'.format(row[0],name,thedate,row[2])
+        else:
+            thestring='(id **{}**) From <@{}> {}:\n{}'.format(row[0],row[1],thedate,row[2])
         q=q+thestring+'\n\n'
     return q
     
@@ -444,6 +451,15 @@ def perchanlistall(w):
     rows=db_c.execute('select * from {} where filled=0 '.format(w)).fetchall()
     for row in rows:
         thestring='(id **{}**) chan:#{} From <@{}>:\n{}'.format(row[0],row[6], row[1],row[2])
+        q=q+thestring+'\n\n'
+    return q
+def perchanlistall_quote(w):
+    q=''
+    rows=db_c.execute('select * from {} where filled=0 '.format(w)).fetchall()
+    for row in rows:
+        name=client.get_user(int(row[1])).name
+#        thestring='(id **{}**) chan:#{} From <@{}>:\n{}'.format(row[0],row[6], row[1],row[2])
+        thestring='(id **{}**) chan:#{} From {}:\n{}'.format(row[0],row[6], name,row[2])
         q=q+thestring+'\n\n'
     return q
 
