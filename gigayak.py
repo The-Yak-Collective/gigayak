@@ -84,8 +84,13 @@ async def on_message(message):
     if message.author == client.user:
         return #ignore own messages to avoid loops
 		
-    dmtarget=await dmchan(message.author.id,message.channel) #build backchannel to user, so we do not answer in general channel
-    ###ISSUE: does this for any message on server, does not check if a bot request
+    if message.content[0] in "$/":
+        dmtarget=await dmchan(message.author.id,message.channel)
+    else:
+        print("not for me:"+message.content")
+        return
+        #build backchannel to user, so we do not answer in general channel
+    ###ISSUE: otherwise does this for any message on server, does not check if a bot request. also for messages from bots, which a bot cannot talk to, apparently
     #print(message.author.id,message.channel)
     #print(message.content, message.created_at)
     #print("now ready to try various bots:"+message.content)
