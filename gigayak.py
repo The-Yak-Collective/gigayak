@@ -214,6 +214,8 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
 async def try_chan_bot(w,message):
     if message.content.startswith("${}test".format(w)) or message.content.startswith("/{}test".format(w)):
         s='this is a test response from {}bot'.format(w)
+        print("trying to send:" +s)
+        print("to channel:"+message.channel.name)
         await splitsend(message.channel,s,False)
         return
 		
