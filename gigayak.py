@@ -85,6 +85,7 @@ async def on_message(message):
         return #ignore own messages to avoid loops
 		
     dmtarget=await dmchan(message.author.id,message.channel) #build backchannel to user, so we do not answer in general channel
+    ###ISSUE: does this for any message on server, does not check if a bot request
 
 #three bots that manage general lists
 #gigabot
