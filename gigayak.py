@@ -86,9 +86,9 @@ async def on_message(message):
 		
     dmtarget=await dmchan(message.author.id,message.channel) #build backchannel to user, so we do not answer in general channel
     ###ISSUE: does this for any message on server, does not check if a bot request
-    print(message.author.id,message.channel)
-    print(message.content, message.created_at)
-    print("now ready to try various bots:"+message.content)
+    #print(message.author.id,message.channel)
+    #print(message.content, message.created_at)
+    #print("now ready to try various bots:"+message.content)
 #three bots that manage general lists
 #gigabot
     await try_bot("gig",message)
