@@ -90,6 +90,7 @@ async def on_message(message):
     if message.content[0] in "$/":
         dmtarget=await dmchan(message.author.id,message.channel)
         #a rather ugly hack for dontmentionme. should probbaly be a slash command
+        print(message.content)
         if message.content[1:].startswith("dontmentionme"):
             await try_dontmentionme(message)
             return
