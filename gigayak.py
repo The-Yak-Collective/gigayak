@@ -31,11 +31,14 @@ USER_DIR="/home/yak/"
 conn=sqlite3.connect(HOME_DIR+'gigdatabase.db') #the connection should be global. 
 
 db_c = conn.cursor()
+conn1=sqlite3.connect(USER_DIR+'dontmentiondatabase.db') #list of names not to mention. hopefully well cached...
+
+db_c1 = conn.cursor()
 
 
 load_dotenv(USER_DIR+'.env')
 
-@tasks.loop(seconds=3600.0*24) #once a day kill old gigs
+@tasks.loop(seconds=3600.0*23) #once a day kill old gigs. a bit less due to auto-restart
 async def test_tick():
     print("running tick")
     reason="went stale after 30 days"
@@ -86,6 +89,10 @@ async def on_message(message):
 		
     if message.content[0] in "$/":
         dmtarget=await dmchan(message.author.id,message.channel)
+        #a rather ugly hack for dontmentionme. should probbaly be a slash command
+        if message.content[1:].startswith("dontmentionme"):
+            await try_dontmentionme(message)
+            return
     else:
         print("not for me:"+message.content)
         return
@@ -216,6 +223,24 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         s='removed from project list: ' +str(conts)
         await splitsend(message.channel,s,False)
         return
+
+#dontmentionmefunctions. to be moved to slashayak also cleanupname needs to move with splitsend to a shared library. cleanup...
+def try_dontmentionme(message):
+    memberid=message.author.id
+    com=message.content.split(maxsplit=1)
+    mention="not"
+    if len(com)==1 or com[1] in ["on", "ON"]:
+        mention="not"
+    if len(com)==2 and com[1] in ["off", "OFF"]
+        mention="yes"
+    if mention=="yes":
+        db_c1.execute('''delete from dontmentiontable where memberid=? ''',(memberid,))
+        conn1.commit()
+    if mention=="not":
+        db_c1.execute('''insert or replace into dontmentiontable values(NULL,?,?)''',(memberid,message.author.name))
+        conn1.commit()
+    s="member "+nametoshow+" is now "+mention+" going to be mentioned by gigayak bot, at least"
+    await splitsend(message.channel,s,False)
 
 #function which provides functionality for a per-channel list-based bot "w"
 async def try_chan_bot(w,message):
@@ -528,6 +553,11 @@ def checkon_database():
     if db_c.fetchone()[0]!=1:
         db_c.execute('''CREATE TABLE votes (vid INTEGER PRIMARY KEY, creatorid text, pid INTEGER, updown int, contents text, createdat int)''') #nonuniform id name
         conn.commit()
+    #here for dontmention db
+    db_c1.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='dontmentiontable' ''')
+    if db_c1.fetchone()[0]!=1:
+        db_c1.execute('''CREATE TABLE dontmentiontable (dontid INTEGER PRIMARY KEY, memberid INTEGER UNIQUE, nametoshow text)''') #for now, just the id, later we may add more
+        conn1.commit()
 
 async def dmchan(t,c):
 #create DM channel betwen bot and user
@@ -543,6 +573,7 @@ async def dmchan(t,c):
 
 async def splitsend(ch,st,codeformat):
 #send messages within discord limit + optional code-type formatting
+    st=cleanupname(st) #take out those who do not want annoying mentions
     if len(st)<1900: #discord limit is 2k and we want some play)
         if codeformat:
             await ch.send('```'+st+'```')
@@ -556,7 +587,13 @@ async def splitsend(ch,st,codeformat):
             await ch.send(st[0:x])
         await splitsend(ch,st[x+1:],codeformat)
 
-def cutup(s,lim): #generalise message split into array. shoudl be used for splitsend
+def cleanupname(st):
+    rows=db_c1.execute('select * from dontmentionme').fetchall()
+    for i in rows:
+        st=st.replace('<@'+str(i[1])+'>',i[2])
+    return cleanst
+
+def cutup(s,lim): #generalise message split into array. should be used for splitsend
     if len(s)<lim: 
         return[s]
     else:
