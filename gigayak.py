@@ -593,7 +593,7 @@ def cleanupname(st):
     rows=db_c1.execute('select * from dontmentiontable').fetchall()
     for i in rows:
         st=st.replace('<@'+str(i[1])+'>',i[2])
-    return cleanst
+    return st
 
 def cutup(s,lim): #generalise message split into array. should be used for splitsend
     if len(s)<lim: 
