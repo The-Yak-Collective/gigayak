@@ -590,7 +590,7 @@ async def splitsend(ch,st,codeformat):
         await splitsend(ch,st[x+1:],codeformat)
 
 def cleanupname(st):
-    rows=db_c1.execute('select * from dontmentionme').fetchall()
+    rows=db_c1.execute('select * from dontmentiontable').fetchall()
     for i in rows:
         st=st.replace('<@'+str(i[1])+'>',i[2])
     return cleanst
