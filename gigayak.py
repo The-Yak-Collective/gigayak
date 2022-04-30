@@ -232,7 +232,7 @@ def try_dontmentionme(message):
     mention="not"
     if len(com)==1 or com[1] in ["on", "ON"]:
         mention="not"
-    if len(com)==2 and com[1] in ["off", "OFF"]
+    if len(com)==2 and com[1] in ["off", "OFF"]:
         mention="yes"
     if mention=="yes":
         db_c1.execute('''delete from dontmentiontable where memberid=? ''',(memberid,))
