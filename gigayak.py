@@ -33,7 +33,7 @@ conn=sqlite3.connect(HOME_DIR+'gigdatabase.db') #the connection should be global
 db_c = conn.cursor()
 conn1=sqlite3.connect(USER_DIR+'dontmentiondatabase.db') #list of names not to mention. hopefully well cached...
 
-db_c1 = conn.cursor()
+db_c1 = conn1.cursor()
 
 
 load_dotenv(USER_DIR+'.env')
