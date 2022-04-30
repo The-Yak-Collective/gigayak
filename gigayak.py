@@ -226,7 +226,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
         return
 
 #dontmentionmefunctions. to be moved to slashayak also cleanupname needs to move with splitsend to a shared library. cleanup...
-def try_dontmentionme(message):
+async def try_dontmentionme(message):
     memberid=message.author.id
     com=message.content.split(maxsplit=1)
     mention="not"
