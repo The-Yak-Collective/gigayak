@@ -228,6 +228,7 @@ go to https://roamresearch.com/#/app/ArtOfGig/page/DJVbvHE2_ to see how to add a
 #dontmentionmefunctions. to be moved to slashayak also cleanupname needs to move with splitsend to a shared library. cleanup...
 async def try_dontmentionme(message):
     memberid=message.author.id
+    nametoshow=message.author.name
     com=message.content.split(maxsplit=1)
     mention="not"
     if len(com)==1 or com[1] in ["on", "ON"]:
@@ -238,7 +239,7 @@ async def try_dontmentionme(message):
         db_c1.execute('''delete from dontmentiontable where memberid=? ''',(memberid,))
         conn1.commit()
     if mention=="not":
-        db_c1.execute('''insert or replace into dontmentiontable values(NULL,?,?)''',(memberid,message.author.name))
+        db_c1.execute('''insert or replace into dontmentiontable values(NULL,?,?)''',(memberid,nametoshow))
         conn1.commit()
     s="member "+nametoshow+" is now "+mention+" going to be mentioned by gigayak bot, at least"
     await splitsend(message.channel,s,False)
