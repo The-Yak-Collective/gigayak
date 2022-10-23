@@ -293,7 +293,7 @@ async def try_chan_bot(w,message):
         await splitsend(message.channel,s,False)
         return
 		
-    if message.content.startswith("${}help".format(w)):
+    if message.content.startswith("${}help".format(w)) or message.content.startswith("/{}help".format(w)):
         s='''
 /{0}help         this message
 /{0}list         list of {0} items
