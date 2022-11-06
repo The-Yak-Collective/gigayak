@@ -40,12 +40,12 @@ load_dotenv(USER_DIR+'.env')
 
 @tasks.loop(seconds=3600.0*23) #once a day kill old gigs. a bit less due to auto-restart
 async def test_tick():
-    print("running tick")
+    print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nrunning tick")
     reason="went stale after 30 days"
     nowish=int(time.time())
     rows=db_c.execute('select * from gigs where filled=0 and createdat<?',(nowish-30*24*3600,)).fetchall()
     for row in rows:
-        print("i would close gig id",row[0])
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\ni would close gig id",row[0])
         try:
             tellto=await dmchan(int(row[1]),0)
             splitsend(tellto,("closed gig id {} because it went stale after 30 days:\n"+row[2]).format(row[0]),False)
@@ -53,8 +53,8 @@ async def test_tick():
             db_c.execute('''UPDATE gigs set filled=1, filledat= ?, reason= ? where gigid=? ''',(int(nowish),reason,row[0]))
             conn.commit()
         except Exception as ex:
-            print("unable to notify re: ", row)
-            print("because of: ", ex)
+            print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nunable to notify re: ", row)
+            print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nbecause of: ", ex)
             print(logging.traceback.format_exc())
     if len(rows)>0:
        await update_gigchannel()
@@ -95,7 +95,7 @@ async def on_message(message):
             await try_dontmentionme(message)
             return
     else:
-        print("not for me:"+message.content)
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nnot for me:"+message.content)
         return
         #build backchannel to user, so we do not answer in general channel
     ###ISSUE: otherwise does this for any message on server, does not check if a bot request. also for messages from bots, which a bot cannot talk to, apparently
@@ -248,8 +248,8 @@ async def try_dontmentionme(message):
 async def try_chan_bot(w,message):
     if message.content.startswith("${}test".format(w)) or message.content.startswith("/{}test".format(w)):
         s='this is a test response from {}bot'.format(w)
-        print("trying to send:" +s)
-        print("to channel:"+message.channel.name)
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\ntrying to send:" +s)
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nto channel:"+message.channel.name)
         await splitsend(message.channel,s,False)
         return
 		
@@ -563,14 +563,14 @@ def checkon_database():
 
 async def dmchan(t,c):
 #create DM channel betwen bot and user
-    print("at dmchan:",t)
+    print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nat dmchan:",t)
     if  not client.get_user(t):
         return c #answer in same channel if no dm
     target=client.get_user(t).dm_channel
     if (not target): 
-        print("need to create dm channel",flush=True)
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\nneed to create dm channel",flush=True)
         target=await client.get_user(t).create_dm()
-        print("target=",target)
+        print("---\n[" + datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() + "]\ntarget=",target)
     return target
 
 async def splitsend(ch,st,codeformat):
